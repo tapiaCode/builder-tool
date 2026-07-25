@@ -3,34 +3,35 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
-// Custom theme
 const obrakitTheme = {
   dark: false,
   colors: {
-    background: '#FFFFFF',
-    surface: '#F5F5F5',
-    primary: '#FF6F00', // Construction Orange
-    secondary: '#455A64', // Industrial Grey
-    accent: '#1976D2', // Steel Blue
-    error: '#B00020',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FB8C00',
+    background: '#F8FAFC',
+    surface: '#FFFFFF',
+    'surface-variant': '#F1F5F9',
+    primary: '#EA580C', // Industrial Safety Orange
+    secondary: '#475569', // Slate Steel
+    accent: '#0284C7', // Vivid Cyan
+    error: '#EF4444',
+    info: '#3B82F6',
+    success: '#10B981',
+    warning: '#F59E0B',
   },
 }
 
 const obrakitThemeDark = {
   dark: true,
   colors: {
-    background: '#121212',
-    surface: '#1E1E1E',
-    primary: '#FF8F00', // Brighter Construction Orange
-    secondary: '#607D8B', // Light Industrial Grey
-    accent: '#42A5F5', // Light Steel Blue
-    error: '#CF6679',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FB8C00',
+    background: '#0F172A', // Deep Slate
+    surface: '#1E293B', // Card Surface
+    'surface-variant': '#334155',
+    primary: '#FF6B00', // Neon Construction Orange
+    secondary: '#94A3B8', // Muted Steel
+    accent: '#38BDF8', // Cyan Glow
+    error: '#F87171',
+    info: '#60A5FA',
+    success: '#34D399',
+    warning: '#FBBF24',
   },
 }
 
