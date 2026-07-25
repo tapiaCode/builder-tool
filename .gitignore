@@ -25,3 +25,10 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+.claude
+.cursor
+.gemini
+.impeccable
+.opencode
+.pi
