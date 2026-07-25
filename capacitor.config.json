@@ -1,0 +1,6 @@
+{
+  "appId": "com.obrakit.offline",
+  "appName": "ObraKit Off-Line",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
