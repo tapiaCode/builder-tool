@@ -36,7 +36,7 @@
         <span class="font-weight-bold">Cálculos</span>
       </v-btn>
       <v-btn value="budget">
-        <v-icon :icon="mdiCurrencyUsd" />
+        <v-icon :icon="mdiCashMultiple" />
         <span class="font-weight-bold">Presupuesto</span>
       </v-btn>
       <v-btn value="guides">
@@ -54,7 +54,7 @@ import {
   mdiTools, 
   mdiThemeLightDark,
   mdiCalculator,
-  mdiCurrencyUsd,
+  mdiCashMultiple,
   mdiBookOpenPageVariant,
   mdiWifiOff
 } from '@mdi/js'

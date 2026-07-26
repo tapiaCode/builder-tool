@@ -55,7 +55,7 @@
           <v-card class="pa-3 rounded-lg stat-card-gradient-primary text-center">
             <v-icon :icon="mdiBucketOutline" color="primary" class="mb-1" />
             <div class="text-h6 font-weight-bold">{{ bagsCount * 4 }}</div>
-            <div class="text-caption text-medium-emphasis">Baldes Arena (20L)</div>
+            <div class="text-caption text-medium-emphasis">Latas Arena (20L)</div>
             <v-chip size="x-small" color="primary" class="mt-1">~{{ (bagsCount * 2).toFixed(1) }} Carretillas</v-chip>
           </v-card>
         </v-col>
@@ -64,7 +64,7 @@
           <v-card class="pa-3 rounded-lg stat-card-gradient-accent text-center">
             <v-icon :icon="mdiDotsGrid" color="accent" class="mb-1" />
             <div class="text-h6 font-weight-bold">{{ bagsCount * 6 }}</div>
-            <div class="text-caption text-medium-emphasis">Baldes Grava (20L)</div>
+            <div class="text-caption text-medium-emphasis">Latas Ripio (20L)</div>
             <v-chip size="x-small" color="accent" class="mt-1">~{{ (bagsCount * 3).toFixed(1) }} Carretillas</v-chip>
           </v-card>
         </v-col>
@@ -73,7 +73,7 @@
           <v-card class="pa-3 rounded-lg stat-card-gradient-success text-center">
             <v-icon :icon="mdiWater" color="info" class="mb-1" />
             <div class="text-h6 font-weight-bold">{{ bagsCount * 1.2 }}</div>
-            <div class="text-caption text-medium-emphasis">Baldes Agua (20L)</div>
+            <div class="text-caption text-medium-emphasis">Latas Agua (20L)</div>
             <v-chip size="x-small" color="info" class="mt-1">~{{ bagsCount * 24 }} Litros</v-chip>
           </v-card>
         </v-col>
@@ -82,7 +82,7 @@
           <v-card class="pa-3 rounded-lg border-0 bg-surface-variant text-center">
             <v-icon :icon="mdiCheckDecagram" color="success" class="mb-1" />
             <div class="text-h6 font-weight-bold text-success">1:2:3</div>
-            <div class="text-caption text-medium-emphasis">Proporción Estándar</div>
+            <div class="text-caption text-medium-emphasis">Proporción Fuerte</div>
             <v-chip size="x-small" color="success" class="mt-1">Estructural</v-chip>
           </v-card>
         </v-col>
@@ -105,8 +105,8 @@
                   <span class="font-weight-bold">1</span>
                 </v-avatar>
               </template>
-              <v-list-item-title class="font-weight-bold">Hormigón Estructural (1:2:3)</v-list-item-title>
-              <v-list-item-subtitle>1 bolsa cemento + 4 baldes arena + 6 baldes grava + 1.2 baldes agua.</v-list-item-subtitle>
+              <v-list-item-title class="font-weight-bold">Hormigón Estructural (1 : 2 : 3)</v-list-item-title>
+              <v-list-item-subtitle>1 bolsa cemento + 4 latas arena + 6 latas ripio + 1.2 latas agua.</v-list-item-subtitle>
             </v-list-item>
             <v-list-item>
               <template #prepend>
@@ -114,8 +114,8 @@
                   <span class="font-weight-bold">2</span>
                 </v-avatar>
               </template>
-              <v-list-item-title class="font-weight-bold">Mortero Asentado Muro (1:4)</v-list-item-title>
-              <v-list-item-subtitle>1 bolsa cemento + 6 baldes arena fina/media + 1.5 baldes agua.</v-list-item-subtitle>
+              <v-list-item-title class="font-weight-bold">Mortero Asentado Muro (1 : 4)</v-list-item-title>
+              <v-list-item-subtitle>1 bolsa cemento + 6 latas arena fina/corriente + 1.5 latas agua.</v-list-item-subtitle>
             </v-list-item>
           </v-list>
         </v-expansion-panel-text>

@@ -57,12 +57,12 @@ export const DOSIFICATIONS = {
 
 // Rendimientos
 export const YIELDS = {
-  BRICKS: { // Unidades por m2 incluyendo junta de 1.5cm
-    '6_holes_soga': 40, // Ladrillo 6 huecos (soga)
-    '6_holes_tizón': 70, // Ladrillo 6 huecos (tizón)
-    '18_holes': 36, // Ladrillo 18 huecos
-    'visto': 60, // Ladrillo visto
-    'block': 12.5 // Bloque de hormigón (20x20x40)
+  BRICKS: { // Unidades por m2 incluyendo junta
+    '6_holes': 40,        // Ladrillo de 6 Huecos (~40 un/m²)
+    'adobito': 55,        // Ladrillo Adobito (~55 un/m²)
+    '18_holes': 36,       // Ladrillo Visto / 18 Huecos (~36 un/m²)
+    'losa_sapera': 8,     // Ladrillo para Losa (Sapera) (~8 un/m²)
+    'block': 12.5         // Bloque de Hormigón (~12.5 un/m²)
   },
   TILES: {
     'cement_glue_kg_m2': 4, // Cemento cola (4 a 5 kg/m2)
