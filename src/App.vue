@@ -1,24 +1,20 @@
 <template>
   <v-app>
-    <v-app-bar class="glass-header" flat density="comfortable">
+    <v-app-bar class="glass-header border-b" flat density="comfortable">
       <template #prepend>
-        <v-avatar color="primary" size="36" class="ml-2">
-          <v-icon :icon="mdiTools" size="20" color="white" />
+        <v-avatar color="primary" size="38" class="ml-2 elevation-2">
+          <v-icon :icon="mdiHomeCity" size="22" color="white" />
         </v-avatar>
       </template>
 
       <v-app-bar-title class="font-weight-black text-subtitle-1 tracking-tight">
-        OBRAKIT <span class="text-primary">OFF-LINE</span>
+        OBRAFÁCIL <span class="text-primary">COMARAPA</span>
       </v-app-bar-title>
 
       <v-spacer />
 
-      <v-chip size="x-small" color="success" variant="flat" class="mr-2 font-weight-bold">
-        <v-icon :icon="mdiWifiOff" start size="12" /> OFF-LINE
-      </v-chip>
-
-      <v-btn icon size="small" variant="text" @click="toggleTheme">
-        <v-icon :icon="mdiThemeLightDark" color="primary" />
+      <v-btn icon size="small" variant="tonal" color="primary" class="mr-2" @click="toggleTheme" aria-label="Cambiar tema">
+        <v-icon :icon="isDark ? mdiWeatherSunny : mdiWeatherNight" />
       </v-btn>
     </v-app-bar>
 
@@ -43,6 +39,10 @@
         <v-icon :icon="mdiBookOpenPageVariant" />
         <span class="font-weight-bold">Guías</span>
       </v-btn>
+      <v-btn value="about">
+        <v-icon :icon="mdiInformation" />
+        <span class="font-weight-bold">Acerca de</span>
+      </v-btn>
     </v-bottom-navigation>
   </v-app>
 </template>
@@ -51,23 +51,27 @@
 import { ref, computed } from 'vue'
 import { useTheme } from 'vuetify'
 import { 
-  mdiTools, 
-  mdiThemeLightDark,
+  mdiHomeCity, 
+  mdiWeatherSunny,
+  mdiWeatherNight,
   mdiCalculator,
   mdiCashMultiple,
   mdiBookOpenPageVariant,
-  mdiWifiOff
+  mdiInformation
 } from '@mdi/js'
 
 import MaterialCalculator from '@/components/MaterialCalculator.vue'
 import BudgetEstimator from '@/components/BudgetEstimator.vue'
 import GuidesAndRecipes from '@/components/GuidesAndRecipes.vue'
+import AboutUs from '@/components/AboutUs.vue'
 
 const theme = useTheme()
 const activeTab = ref('calculator')
 
+const isDark = computed(() => theme.global.current.value.dark)
+
 const toggleTheme = () => {
-  theme.global.name.value = theme.global.current.value.dark ? 'obrakitTheme' : 'obrakitThemeDark'
+  theme.global.name.value = isDark.value ? 'obrakitTheme' : 'obrakitThemeDark'
 }
 
 const currentComponent = computed(() => {
@@ -75,6 +79,7 @@ const currentComponent = computed(() => {
     case 'calculator': return MaterialCalculator
     case 'budget': return BudgetEstimator
     case 'guides': return GuidesAndRecipes
+    case 'about': return AboutUs
     default: return MaterialCalculator
   }
 })
@@ -84,5 +89,8 @@ const currentComponent = computed(() => {
 .max-width-container {
   max-width: 900px;
   margin: 0 auto;
+}
+.glass-header {
+  backdrop-filter: blur(10px);
 }
 </style>

@@ -5,9 +5,9 @@
       <v-card-text class="pa-5">
         <div class="d-flex align-center justify-space-between">
           <div>
-            <div class="text-overline text-accent font-weight-bold tracking-wider">PRESUPUESTO DE OBRA — BOLIVIA (BOB)</div>
-            <h2 class="text-h5 font-weight-black text-on-surface mb-1">Estimador de Presupuesto</h2>
-            <p class="text-body-2 text-medium-emphasis mb-0">Precios referenciales de materiales y mano de obra en Bolivianos (Bs.)</p>
+            <div class="text-overline text-accent font-weight-bold tracking-wider">COTIZADOR RÁPIDO PARA CLIENTES</div>
+            <h2 class="text-h5 font-weight-black text-on-surface mb-1">Cotizaciones & Presupuestos</h2>
+            <p class="text-body-2 text-medium-emphasis mb-0">Crea proformas rápidas, envíalas por WhatsApp y guarda tu historial</p>
           </div>
           <v-avatar color="accent" size="52" class="elevation-4">
             <v-icon :icon="mdiCashMultiple" size="28" color="white" />
@@ -16,14 +16,258 @@
       </v-card-text>
     </v-card>
 
-    <v-row density="comfortable">
-      <!-- Form Input Column -->
-      <v-col cols="12" md="6">
+    <!-- Sub-Navigation Tabs -->
+    <v-card class="rounded-xl border-0 elevation-2 mb-4">
+      <v-tabs v-model="subTab" color="primary" grow align-tabs="center" class="pa-1">
+        <v-tab value="newQuote" class="rounded-lg text-none font-weight-bold">
+          <v-icon :icon="mdiFileDocumentEditOutline" class="mr-2" /> Nueva Cotización
+        </v-tab>
+        <v-tab value="history" class="rounded-lg text-none font-weight-bold">
+          <v-icon :icon="mdiHistory" class="mr-2" /> Historial ({{ savedQuotes.length }})
+        </v-tab>
+        <v-tab value="config" class="rounded-lg text-none font-weight-bold">
+          <v-icon :icon="mdiCogOutline" class="mr-2" /> Precios Base
+        </v-tab>
+      </v-tabs>
+    </v-card>
+
+    <v-window v-model="subTab">
+      <!-- PESTAÑA 1: NUEVA COTIZACIÓN PARA CLIENTE -->
+      <v-window-item value="newQuote">
+        <v-card class="rounded-xl border-0 elevation-2 pa-4 mb-4">
+          <div class="d-flex align-center justify-space-between mb-3">
+            <h3 class="text-subtitle-1 font-weight-bold d-flex align-center">
+              <v-icon :icon="mdiAccount" color="primary" class="mr-2" />
+              1. Datos del Cliente y Trabajo
+            </h3>
+            <v-menu location="bottom end">
+              <template #activator="{ props }">
+                <v-btn size="x-small" color="primary" variant="tonal" v-bind="props">
+                  <v-icon :icon="mdiLightningBolt" start /> Cargar Plantilla
+                </v-btn>
+              </template>
+              <v-list density="compact">
+                <v-list-item title="Cocina (3×3m con Mesón)" @click="loadPreset('cocina')" />
+                <v-list-item title="Baño Completo (2×2m)" @click="loadPreset('bano')" />
+                <v-list-item title="Cuarto Estándar (4×4m)" @click="loadPreset('cuarto')" />
+                <v-list-item title="Revoque de Fachada" @click="loadPreset('revoque')" />
+              </v-list>
+            </v-menu>
+          </div>
+
+          <v-row density="compact">
+            <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="quoteForm.clientName"
+                label="Nombre del Cliente"
+                placeholder="Ej. Don Juan Pérez"
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                class="mb-3"
+              />
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="quoteForm.clientPhone"
+                label="Celular / WhatsApp (Opcional)"
+                placeholder="Ej. 71234567"
+                type="tel"
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                class="mb-3"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                v-model="quoteForm.projectTitle"
+                label="Nombre del Proyecto / Trabajo"
+                placeholder="Ej. Construcción de Cocina 3×3m con Mesón de Hormigón"
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                class="mb-3"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-textarea
+                v-model="quoteForm.notes"
+                label="Detalles o Especificaciones del Cliente"
+                placeholder="Ej. Incluye mesón de hormigón, cerámica en paredes hasta 1.80m y punto de agua"
+                rows="2"
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                class="mb-3"
+              />
+            </v-col>
+          </v-row>
+
+          <v-divider class="my-4" />
+
+          <!-- Detalle de Ítems -->
+          <div class="d-flex align-center justify-space-between mb-3">
+            <h3 class="text-subtitle-1 font-weight-bold d-flex align-center">
+              <v-icon :icon="mdiFormatListNumbered" color="primary" class="mr-2" />
+              2. Ítems y Cobros de la Cotización
+            </h3>
+            <v-btn size="x-small" color="primary" variant="text" @click="addItem">
+              <v-icon :icon="mdiPlus" start /> Agregar Ítem
+            </v-btn>
+          </div>
+
+          <v-row v-for="(item, index) in quoteForm.items" :key="index" density="compact" class="align-center mb-2">
+            <v-col cols="12" sm="5">
+              <v-text-field
+                v-model="item.description"
+                label="Descripción del trabajo / material"
+                placeholder="Ej. Mano de Obra"
+                variant="outlined"
+                density="compact"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="4" sm="2">
+              <v-text-field
+                v-model.number="item.quantity"
+                label="Cant."
+                type="number"
+                min="1"
+                variant="outlined"
+                density="compact"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="6" sm="4">
+              <v-text-field
+                v-model.number="item.unitPrice"
+                label="Precio (Bs.)"
+                prefix="Bs."
+                type="number"
+                variant="outlined"
+                density="compact"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="2" sm="1" class="text-right">
+              <v-btn icon size="x-small" color="error" variant="text" @click="removeItem(index)">
+                <v-icon :icon="mdiDelete" />
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <!-- Total Cotización Card -->
+          <v-card class="pa-4 rounded-xl stat-card-gradient-primary border-0 mt-4 text-center">
+            <div class="text-caption font-weight-bold text-medium-emphasis">TOTAL DE LA COTIZACIÓN</div>
+            <div class="text-h3 font-weight-black text-primary my-1">
+              Bs. {{ calculatedTotal.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} BOB
+            </div>
+          </v-card>
+
+          <!-- Action Buttons -->
+          <v-row class="mt-4">
+            <v-col cols="12" sm="6">
+              <v-btn
+                color="success"
+                size="large"
+                block
+                class="rounded-lg font-weight-bold"
+                @click="sendWhatsApp"
+              >
+                <v-icon :icon="mdiWhatsapp" start size="22" /> Enviar por WhatsApp
+              </v-btn>
+            </v-col>
+            <v-col cols="6" sm="3">
+              <v-btn
+                color="primary"
+                size="large"
+                block
+                variant="tonal"
+                class="rounded-lg font-weight-bold"
+                @click="saveQuote"
+              >
+                <v-icon :icon="mdiContentSave" start /> Guardar
+              </v-btn>
+            </v-col>
+            <v-col cols="6" sm="3">
+              <v-btn
+                color="secondary"
+                size="large"
+                block
+                variant="outlined"
+                class="rounded-lg font-weight-bold"
+                @click="copyTextQuote"
+              >
+                <v-icon :icon="mdiContentCopy" start /> Copiar
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-window-item>
+
+      <!-- PESTAÑA 2: HISTORIAL DE COTIZACIONES -->
+      <v-window-item value="history">
+        <div v-if="savedQuotes.length === 0" class="text-center py-8">
+          <v-icon :icon="mdiHistory" size="64" color="medium-emphasis" class="mb-3" />
+          <h3 class="text-h6 font-weight-bold text-medium-emphasis">No tienes cotizaciones guardadas</h3>
+          <p class="text-caption text-medium-emphasis">Crea una cotización en la primera pestaña y guárdala aquí para ver tu historial.</p>
+        </div>
+
+        <div v-else>
+          <div class="d-flex align-center justify-space-between mb-3 px-1">
+            <span class="text-caption font-weight-bold text-medium-emphasis">COTIZACIONES REGISTRADAS</span>
+            <v-btn size="x-small" color="error" variant="text" @click="clearHistory">
+              <v-icon :icon="mdiDelete" start /> Borrar Historial
+            </v-btn>
+          </div>
+
+          <v-card
+            v-for="quote in savedQuotes"
+            :key="quote.id"
+            class="rounded-xl border-0 elevation-2 pa-4 mb-3"
+          >
+            <div class="d-flex align-center justify-space-between mb-2">
+              <div>
+                <span class="text-subtitle-1 font-weight-black text-primary">{{ quote.clientName || 'Cliente sin nombre' }}</span>
+                <span v-if="quote.clientPhone" class="text-caption text-medium-emphasis ml-2">({{ quote.clientPhone }})</span>
+              </div>
+              <v-chip size="x-small" color="primary" variant="flat" class="font-weight-bold">
+                Bs. {{ quote.total.toLocaleString('es-BO', { minimumFractionDigits: 2 }) }}
+              </v-chip>
+            </div>
+
+            <div class="text-body-2 font-weight-bold mb-1">{{ quote.projectTitle }}</div>
+            <div v-if="quote.notes" class="text-caption text-medium-emphasis mb-2">{{ quote.notes }}</div>
+
+            <div class="d-flex align-center justify-space-between border-t pt-3 mt-2">
+              <span class="text-caption text-medium-emphasis">
+                <v-icon :icon="mdiClockOutline" size="14" start /> {{ quote.date }}
+              </span>
+
+              <div>
+                <v-btn icon size="x-small" color="success" class="mr-1" @click="sendSavedWhatsApp(quote)" title="Enviar por WhatsApp">
+                  <v-icon :icon="mdiWhatsapp" />
+                </v-btn>
+                <v-btn icon size="x-small" color="primary" variant="tonal" class="mr-1" @click="loadQuoteIntoForm(quote)" title="Ver / Editar">
+                  <v-icon :icon="mdiFileDocumentEditOutline" />
+                </v-btn>
+                <v-btn icon size="x-small" color="error" variant="text" @click="deleteQuote(quote.id)" title="Eliminar">
+                  <v-icon :icon="mdiDelete" />
+                </v-btn>
+              </div>
+            </div>
+          </v-card>
+        </div>
+      </v-window-item>
+
+      <!-- PESTAÑA 3: PRECIOS BASE DE REFERENCIA -->
+      <v-window-item value="config">
         <v-card class="rounded-xl border-0 elevation-2 pa-4 mb-4">
           <div class="d-flex align-center justify-space-between mb-4">
             <h3 class="text-subtitle-1 font-weight-bold d-flex align-center">
-              <v-icon :icon="mdiCashMultiple" color="primary" class="mr-2" />
-              Precios por Material (Mercado Boliviano)
+              <v-icon :icon="mdiCogOutline" color="primary" class="mr-2" />
+              Precios Unitarios de Referencia (Comarapa)
             </h3>
             <v-btn size="x-small" color="primary" variant="text" @click="resetDefaults">
               <v-icon :icon="mdiRefresh" start /> Restablecer
@@ -58,7 +302,7 @@
             <v-col cols="12" sm="6">
               <v-text-field
                 v-model.number="prices.gravel"
-                label="Grava / Chispa de Río (por m³)"
+                label="Ripio / Chispa de Río (por m³)"
                 prefix="Bs."
                 type="number"
                 variant="outlined"
@@ -82,7 +326,7 @@
             <v-col cols="12">
               <v-text-field
                 v-model.number="prices.labor"
-                label="Mano de Obra (Contrato o Trabajo Global)"
+                label="Mano de Obra Estimada (Base)"
                 prefix="Bs."
                 type="number"
                 variant="outlined"
@@ -92,52 +336,11 @@
               />
             </v-col>
           </v-row>
-
-          <v-row class="mt-2">
-            <v-col cols="6">
-              <v-btn color="primary" block class="rounded-lg font-weight-bold" @click="calculateTotal">
-                <v-icon :icon="mdiCalculator" start /> Actualizar
-              </v-btn>
-            </v-col>
-            <v-col cols="6">
-              <v-btn color="secondary" block variant="tonal" class="rounded-lg font-weight-bold" @click="exportData">
-                <v-icon :icon="mdiExportVariant" start /> Exportar
-              </v-btn>
-            </v-col>
-          </v-row>
         </v-card>
-      </v-col>
+      </v-window-item>
+    </v-window>
 
-      <!-- Chart & Total Column -->
-      <v-col cols="12" md="6">
-        <v-card class="rounded-xl border-0 elevation-2 pa-4 mb-4 text-center">
-          <div class="text-overline text-medium-emphasis font-weight-bold">COSTO TOTAL ESTIMADO DE LA OBRA</div>
-          <div class="text-h3 font-weight-black text-primary my-1">Bs. {{ totalCost.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} BOB</div>
-          
-          <v-divider class="my-4" />
-
-          <h4 class="text-subtitle-2 font-weight-bold text-medium-emphasis mb-3">DESGLOSE DEL GASTO (%)</h4>
-          
-          <div class="chart-container mx-auto" style="position: relative; height: 220px; width: 100%; max-width: 280px;">
-            <Doughnut v-if="chartData.datasets[0].data.length > 0" :data="chartData" :options="chartOptions" />
-          </div>
-
-          <div class="d-flex justify-center flex-wrap gap-2 mt-4">
-            <v-chip size="small" color="primary" variant="flat" class="ma-1">
-              Material Brutal/Pesado: Bs. {{ breakdown.material.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-            </v-chip>
-            <v-chip size="small" color="accent" variant="flat" class="ma-1">
-              Acabados: Bs. {{ breakdown.finishes.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-            </v-chip>
-            <v-chip size="small" color="success" variant="flat" class="ma-1">
-              Mano de Obra: Bs. {{ breakdown.labor.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-            </v-chip>
-          </div>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- Snackbar / Toast Notification -->
+    <!-- Toast Notification -->
     <v-snackbar v-model="snackbar" :timeout="3000" color="success" rounded="pill" location="bottom center">
       <v-icon :icon="mdiCheckCircle" start /> {{ snackbarText }}
     </v-snackbar>
@@ -145,111 +348,239 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { 
   mdiCashMultiple, 
-  mdiExportVariant, 
   mdiRefresh, 
-  mdiCalculator,
-  mdiCheckCircle 
+  mdiCheckCircle,
+  mdiFileDocumentEditOutline,
+  mdiHistory,
+  mdiCogOutline,
+  mdiAccount,
+  mdiPlus,
+  mdiDelete,
+  mdiWhatsapp,
+  mdiContentCopy,
+  mdiContentSave,
+  mdiClockOutline,
+  mdiLightningBolt,
+  mdiFormatListNumbered
 } from '@mdi/js'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import { Doughnut } from 'vue-chartjs'
 
-ChartJS.register(ArcElement, Tooltip, Legend)
-
+const subTab = ref('newQuote')
 const snackbar = ref(false)
 const snackbarText = ref('')
 
-// Precios de referencia reales en Bolivia (BOB)
-const defaultPrices = {
-  cement: 55.00,   // Bolsa de 50kg (IP-30 / Viacha / Fancesa / Warnes / Coboce)
-  sand: 120.00,    // Arena por m³
-  gravel: 130.00,  // Grava / Chispa por m³
-  brick: 1750.00,  // Ladrillo gambote 6 huecos (Mil unidades)
-  labor: 3500.00   // Mano de obra global estimada
-}
-
-const prices = reactive({ ...defaultPrices })
-const totalCost = ref(0)
-const breakdown = reactive({ material: 0, finishes: 0, labor: 0 })
-
-const chartData = ref<any>({
-  labels: ['Material Pesado', 'Acabados', 'Mano de Obra'],
-  datasets: [{
-    data: [0, 0, 0],
-    backgroundColor: ['#FF6B00', '#38BDF8', '#34D399'],
-    borderWidth: 0
-  }]
+// Formulario de Cotización Rápida
+const quoteForm = reactive({
+  clientName: '',
+  clientPhone: '',
+  projectTitle: 'Construcción de Cocina (3×3m)',
+  notes: 'Incluye mesón de hormigón, azulejos en pared y punto de agua.',
+  items: [
+    { description: 'Materiales Pesados (Cemento, Arena, Ripio)', quantity: 1, unitPrice: 3500 },
+    { description: 'Mano de Obra Maestro y Ayudante', quantity: 1, unitPrice: 2800 },
+    { description: 'Cerámica y Mesón de Hormigón', quantity: 1, unitPrice: 1200 }
+  ]
 })
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      position: 'bottom' as const,
-      labels: {
-        color: '#94A3B8',
-        font: { family: 'Plus Jakarta Sans', size: 12 }
-      }
-    }
-  },
-  cutout: '70%'
+const calculatedTotal = computed(() => {
+  return quoteForm.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
+})
+
+const addItem = () => {
+  quoteForm.items.push({ description: '', quantity: 1, unitPrice: 0 })
 }
 
-const calculateTotal = () => {
-  const mat = (prices.cement * 40) + (prices.sand * 8) + (prices.gravel * 10) + (prices.brick * 1.5)
-  const fin = mat * 0.25
-  const lab = prices.labor
-
-  breakdown.material = mat
-  breakdown.finishes = fin
-  breakdown.labor = lab
-  totalCost.value = mat + fin + lab
-  
-  chartData.value = {
-    labels: ['Material Pesado', 'Acabados', 'Mano de Obra'],
-    datasets: [{
-      data: [mat, fin, lab],
-      backgroundColor: ['#FF6B00', '#38BDF8', '#34D399'],
-      borderWidth: 0
-    }]
+const removeItem = (index: number) => {
+  if (quoteForm.items.length > 1) {
+    quoteForm.items.splice(index, 1)
   }
 }
 
-const resetDefaults = () => {
-  Object.assign(prices, defaultPrices)
-  calculateTotal()
+// Plantillas Rápidas
+const loadPreset = (type: string) => {
+  if (type === 'cocina') {
+    quoteForm.projectTitle = 'Construcción de Cocina (3×3m con Mesón)'
+    quoteForm.notes = 'Incluye mesón de hormigón reforzado, cerámica en pared hasta 1.80m y punto de agua.'
+    quoteForm.items = [
+      { description: 'Materiales (Cemento, Arena, Ripio, Ladrillo)', quantity: 1, unitPrice: 3800 },
+      { description: 'Mano de Obra de Construcción', quantity: 1, unitPrice: 3000 },
+      { description: 'Acabados de Mesón y Cerámica', quantity: 1, unitPrice: 1400 }
+    ]
+  } else if (type === 'bano') {
+    quoteForm.projectTitle = 'Construcción / Remodelación de Baño (2×2m)'
+    quoteForm.notes = 'Incluye revestimiento completo con cerámica, instalación sanitaria y grifería.'
+    quoteForm.items = [
+      { description: 'Materiales (Cemento, Arena, Ladrillo)', quantity: 1, unitPrice: 2200 },
+      { description: 'Cerámica, Cemento Cola y Pastina', quantity: 1, unitPrice: 1500 },
+      { description: 'Mano de Obra Sanitaria y Albañilería', quantity: 1, unitPrice: 2500 }
+    ]
+  } else if (type === 'cuarto') {
+    quoteForm.projectTitle = 'Construcción de Cuarto Completo (4×4m)'
+    quoteForm.notes = 'Paredes con Ladrillo 6 Huecos, contrapiso y colocación de piso cerámico.'
+    quoteForm.items = [
+      { description: 'Ladrillos 6 Huecos (~1,850 un.)', quantity: 1, unitPrice: 3200 },
+      { description: 'Cemento, Arena y Ripio', quantity: 1, unitPrice: 2800 },
+      { description: 'Mano de Obra Global de Obra', quantity: 1, unitPrice: 4500 }
+    ]
+  } else if (type === 'revoque') {
+    quoteForm.projectTitle = 'Revoque de Fachada / Muros'
+    quoteForm.notes = 'Revoque exterior con cal/cemento impermeabilizado.'
+    quoteForm.items = [
+      { description: 'Cemento y Cal de Revoque', quantity: 1, unitPrice: 1200 },
+      { description: 'Arena Fina de Río', quantity: 1, unitPrice: 800 },
+      { description: 'Mano de Obra por m²', quantity: 1, unitPrice: 2000 }
+    ]
+  }
 }
 
-watch(prices, (newPrices) => {
-  localStorage.setItem('obrakit_prices', JSON.stringify(newPrices))
-  calculateTotal()
-}, { deep: true })
+// WhatsApp Generator
+const formatWhatsAppMessage = (form: typeof quoteForm, total: number) => {
+  let msg = `🚧 *COTIZACIÓN DE OBRA - OBRAFÁCIL COMARAPA* 🚧\n\n`
+  if (form.clientName) msg += `👤 *Cliente:* ${form.clientName}\n`
+  msg += `📌 *Proyecto:* ${form.projectTitle}\n\n`
+  msg += `📋 *DETALLE DE COTIZACIÓN:*\n`
 
-const exportData = async () => {
-  const text = `🚧 PRESUPUESTO OBRAKIT (BOLIVIA - BOB) 🚧\n` +
-    `Total Estimado: Bs. ${totalCost.value.toFixed(2)} BOB\n\n` +
-    `Desglose de Materiales y Costos:\n` +
-    `- Cemento IP-30/40: Bs. ${prices.cement}/bolsa (50kg)\n` +
-    `- Arena Corriente/Fina: Bs. ${prices.sand}/m³\n` +
-    `- Grava / Chispa: Bs. ${prices.gravel}/m³\n` +
-    `- Ladrillo Gambote 6H: Bs. ${prices.brick}/mil unidades\n` +
-    `- Mano de Obra: Bs. ${prices.labor}\n\n` +
-    `Generado con términos y unidades reales de obra en Bolivia por ObraKit.`;
-  
+  form.items.forEach((item, index) => {
+    if (item.description) {
+      msg += `${index + 1}. ${item.description}: ${item.quantity} x Bs. ${item.unitPrice.toLocaleString('es-BO')} = *Bs. ${(item.quantity * item.unitPrice).toLocaleString('es-BO')}*\n`
+    }
+  })
+
+  msg += `\n----------------------------------\n`
+  msg += `💰 *TOTAL COTIZADO:* Bs. ${total.toLocaleString('es-BO', { minimumFractionDigits: 2 })} BOB\n`
+  msg += `----------------------------------\n`
+
+  if (form.notes) {
+    msg += `\n📝 *Notas:* ${form.notes}\n`
+  }
+
+  msg += `\n_Cotización generada para Comarapa por Maestro de Obra con Obrafácil Comarapa_`
+  return msg
+}
+
+const sendWhatsApp = () => {
+  const text = formatWhatsAppMessage(quoteForm, calculatedTotal.value)
+  const phone = quoteForm.clientPhone.replace(/\D/g, '')
+  const encoded = encodeURIComponent(text)
+
+  let url = `https://api.whatsapp.com/send?text=${encoded}`
+  if (phone) {
+    url = `https://api.whatsapp.com/send?phone=591${phone}&text=${encoded}`
+  }
+
+  window.open(url, '_blank')
+}
+
+const copyTextQuote = async () => {
+  const text = formatWhatsAppMessage(quoteForm, calculatedTotal.value)
   try {
     await navigator.clipboard.writeText(text)
-    snackbarText.value = '¡Resumen de obra copiado al portapapeles!'
+    snackbarText.value = '¡Cotización copiada para enviar!'
     snackbar.value = true
-  } catch (err) {
+  } catch (e) {
     snackbarText.value = 'Error al copiar'
     snackbar.value = true
   }
 }
 
+// Historial en localStorage
+interface SavedQuote {
+  id: string
+  date: string
+  clientName: string
+  clientPhone: string
+  projectTitle: string
+  notes: string
+  items: { description: string; quantity: number; unitPrice: number }[]
+  total: number
+}
+
+const savedQuotes = ref<SavedQuote[]>([])
+
+const saveQuote = () => {
+  const newQuote: SavedQuote = {
+    id: Date.now().toString(),
+    date: new Date().toLocaleDateString('es-BO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    clientName: quoteForm.clientName || 'Cliente',
+    clientPhone: quoteForm.clientPhone,
+    projectTitle: quoteForm.projectTitle || 'Trabajo de Construcción',
+    notes: quoteForm.notes,
+    items: JSON.parse(JSON.stringify(quoteForm.items)),
+    total: calculatedTotal.value
+  }
+
+  savedQuotes.value.unshift(newQuote)
+  localStorage.setItem('obrafacil_quotes', JSON.stringify(savedQuotes.value))
+  
+  snackbarText.value = '¡Cotización guardada en el Historial!'
+  snackbar.value = true
+}
+
+const loadSavedQuotes = () => {
+  const saved = localStorage.getItem('obrafacil_quotes')
+  if (saved) {
+    try {
+      savedQuotes.value = JSON.parse(saved)
+    } catch (e) {}
+  }
+}
+
+const sendSavedWhatsApp = (quote: SavedQuote) => {
+  const text = formatWhatsAppMessage(quote, quote.total)
+  const phone = quote.clientPhone.replace(/\D/g, '')
+  const encoded = encodeURIComponent(text)
+
+  let url = `https://api.whatsapp.com/send?text=${encoded}`
+  if (phone) {
+    url = `https://api.whatsapp.com/send?phone=591${phone}&text=${encoded}`
+  }
+  window.open(url, '_blank')
+}
+
+const loadQuoteIntoForm = (quote: SavedQuote) => {
+  quoteForm.clientName = quote.clientName
+  quoteForm.clientPhone = quote.clientPhone
+  quoteForm.projectTitle = quote.projectTitle
+  quoteForm.notes = quote.notes
+  quoteForm.items = JSON.parse(JSON.stringify(quote.items))
+  subTab.value = 'newQuote'
+}
+
+const deleteQuote = (id: string) => {
+  savedQuotes.value = savedQuotes.value.filter(q => q.id !== id)
+  localStorage.setItem('obrafacil_quotes', JSON.stringify(savedQuotes.value))
+}
+
+const clearHistory = () => {
+  if (confirm('¿Deseas borrar todo el historial de cotizaciones?')) {
+    savedQuotes.value = []
+    localStorage.removeItem('obrafacil_quotes')
+  }
+}
+
+// Precios de referencia base en Bolivia (BOB)
+const defaultPrices = {
+  cement: 55.00,
+  sand: 120.00,
+  gravel: 130.00,
+  brick: 1750.00,
+  labor: 3500.00
+}
+
+const prices = reactive({ ...defaultPrices })
+
+const resetDefaults = () => {
+  Object.assign(prices, defaultPrices)
+}
+
+watch(prices, (newPrices) => {
+  localStorage.setItem('obrakit_prices', JSON.stringify(newPrices))
+}, { deep: true })
+
 onMounted(() => {
+  loadSavedQuotes()
   const saved = localStorage.getItem('obrakit_prices')
   if (saved) {
     try {
@@ -261,6 +592,5 @@ onMounted(() => {
       }
     } catch (e) {}
   }
-  calculateTotal()
 })
 </script>

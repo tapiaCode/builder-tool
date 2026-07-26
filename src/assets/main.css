@@ -31,19 +31,19 @@ body {
 /* Custom Gradient Cards */
 .stat-card-gradient-primary {
   background: linear-gradient(135deg, rgba(255, 107, 0, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%) !important;
-  border: 1px solid rgba(255, 107, 0, 0.3) !important;
+  /* border: 1px solid rgba(255, 107, 0, 0.3) !important; */
   transition: all 0.25s ease-in-out;
 }
 
 .stat-card-gradient-accent {
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%) !important;
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  /* border: 1px solid rgba(56, 189, 248, 0.3) !important; */
   transition: all 0.25s ease-in-out;
 }
 
 .stat-card-gradient-success {
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%) !important;
-  border: 1px solid rgba(52, 211, 153, 0.3) !important;
+  /* border: 1px solid rgba(52, 211, 153, 0.3) !important; */
   transition: all 0.25s ease-in-out;
 }
 

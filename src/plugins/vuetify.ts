@@ -9,13 +9,16 @@ const obrakitTheme = {
     background: '#F8FAFC',
     surface: '#FFFFFF',
     'surface-variant': '#F1F5F9',
-    primary: '#EA580C', // Industrial Safety Orange
+    'on-background': '#0F172A',
+    'on-surface': '#0F172A',
+    'on-surface-variant': '#475569',
+    primary: '#EA580C', // Safety Orange
     secondary: '#475569', // Slate Steel
-    accent: '#0284C7', // Vivid Cyan
-    error: '#EF4444',
-    info: '#3B82F6',
-    success: '#10B981',
-    warning: '#F59E0B',
+    accent: '#0284C7', // Vivid Sky Blue
+    error: '#DC2626',
+    info: '#2563EB',
+    success: '#16A34A',
+    warning: '#D97706',
   },
 }
 
@@ -25,9 +28,12 @@ const obrakitThemeDark = {
     background: '#0F172A', // Deep Slate
     surface: '#1E293B', // Card Surface
     'surface-variant': '#334155',
-    primary: '#FF6B00', // Neon Construction Orange
+    'on-background': '#F8FAFC',
+    'on-surface': '#F8FAFC',
+    'on-surface-variant': '#94A3B8',
+    primary: '#FF6B00', // Bright Orange Glow
     secondary: '#94A3B8', // Muted Steel
-    accent: '#38BDF8', // Cyan Glow
+    accent: '#38BDF8', // Cyan Accent
     error: '#F87171',
     info: '#60A5FA',
     success: '#34D399',
