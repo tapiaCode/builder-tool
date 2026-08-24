@@ -233,7 +233,7 @@
                                 <v-card class="pa-3 rounded-xl border-0 bg-surface-variant text-center">
                                     <v-icon :icon="mdiWater" color="info" class="mb-1" />
                                     <div class="text-h6 font-weight-bold">{{ results.room.totalWaterL }} <span class="text-caption">L</span></div>
-                                    <div class="text-caption text-medium-emphasis">Agua (~{{ Math.ceil(results.room.totalWaterL / 20) }} Latas)</div>
+                                    <div class="text-caption text-medium-emphasis">Agua (~{{ Math.ceil(results.room.totalWaterL / 20) }} Baldes)</div>
                                 </v-card>
                             </v-col>
                         </v-row>
@@ -324,7 +324,7 @@
                                 </div>
                                 <div class="text-caption font-weight-bold text-primary mb-1">1 Cemento : 2 Arena : 3 Ripio</div>
                                 <div class="text-caption text-medium-emphasis">
-                                    • Para 1 bolsa de cemento: 4 latas de arena + 6 latas de ripio.<br />
+                                    • Para 1 bolsa de cemento: 4 baldes de arena + 6 baldes de ripio.<br />
                                     • Ideal para: <strong>Vigas, Columnas y Losas</strong>.
                                 </div>
                             </v-card>
@@ -344,7 +344,7 @@
                                 </div>
                                 <div class="text-caption font-weight-bold text-accent mb-1">1 Cemento : 2 Arena : 4 Ripio</div>
                                 <div class="text-caption text-medium-emphasis">
-                                    • Para 1 bolsa de cemento: 4 latas de arena + 8 latas de ripio.<br />
+                                    • Para 1 bolsa de cemento: 4 baldes de arena + 8 baldes de ripio.<br />
                                     • Ideal para: <strong>Zapatas, Cimientos y Contrapisos</strong>.
                                 </div>
                             </v-card>
@@ -398,7 +398,7 @@
                                     <div class="text-h5 font-weight-black">{{ results.concrete.waterL }} <span class="text-caption">L</span></div>
                                     <div class="text-caption text-medium-emphasis">Agua Limpia</div>
                                     <v-chip size="x-small" color="info" variant="tonal" class="mt-1"
-                                        >~{{ Math.ceil(results.concrete.waterL / 20) }} Latas 20L</v-chip
+                                        >~{{ Math.ceil(results.concrete.waterL / 20) }} Baldes 20L</v-chip
                                     >
                                 </v-card>
                             </v-col>

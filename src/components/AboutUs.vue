@@ -119,7 +119,7 @@
                     </div>
                     <p class="text-body-2 text-medium-emphasis mb-0">
                         Calcula cimientos, zapatas, columnas, vigas y contrapisos con medidas simples (Largo × Ancho × Grosor) y mezclas 1:2:3 y 1:2:4
-                        en latas y carretillas.
+                        en baldes y carretillas.
                     </p>
                 </v-card>
             </v-col>
