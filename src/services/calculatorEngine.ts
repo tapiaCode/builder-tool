@@ -22,7 +22,7 @@ export const m3ToTrucks = (m3: number) => Number((m3 * CONVERSIONS.M3_TO_TRUCKS)
 export function calculateConcrete(
   volumeM3: number, 
   proportion: keyof typeof DOSIFICATIONS.CONCRETE = '1:2:3', 
-  wasteFactor = 1.05
+  wasteFactor = 1.0
 ): CalculationResult {
   const dosif = DOSIFICATIONS.CONCRETE[proportion]
   const totalVolume = volumeM3 * wasteFactor
@@ -49,17 +49,17 @@ export function calculateWall(
   areaM2: number, 
   brickType: keyof typeof YIELDS.BRICKS = '6_holes',
   mortarProportion: keyof typeof DOSIFICATIONS.MORTAR = '1:4',
-  wasteFactor = 1.10
+  wasteFactor = 1.0
 ) {
-  // 1. Cantidad de ladrillos
+  // 1. Cantidad de ladrillos (sin desperdicio por defecto)
   const baseBricks = areaM2 * YIELDS.BRICKS[brickType]
   const totalBricks = Math.ceil(baseBricks * wasteFactor)
 
-  // 2. Volumen de mortero (aprox 0.025 m3 por m2 para muros de soga)
-  let mortarM3PerM2 = 0.025
-  if (brickType === 'adobito') mortarM3PerM2 = 0.035
-  if (brickType === 'block') mortarM3PerM2 = 0.015
-  if (brickType === 'losa_sapera') mortarM3PerM2 = 0.005
+  // 2. Volumen de mortero en m3 por m2 para muro de soga (10 cm de espesor)
+  // Ladrillo 6 Huecos (10×15×24 cm): ~0.022 m3/m2
+  // Ladrillo Adobito (10×5×21 cm): ~0.028 m3/m2
+  let mortarM3PerM2 = 0.022
+  if (brickType === 'adobito') mortarM3PerM2 = 0.028
 
   const totalMortarM3 = areaM2 * mortarM3PerM2 * wasteFactor
   const dosif = DOSIFICATIONS.MORTAR[mortarProportion]
@@ -84,7 +84,7 @@ export function calculateWall(
  */
 export function calculateTiling(
   areaM2: number, 
-  wasteFactor = 1.05, 
+  wasteFactor = 1.0, 
   tileWidthCm = 40, 
   tileHeightCm = 40
 ) {
@@ -130,7 +130,7 @@ export function calculateRoom(
   doorWindowOpeningsM2 = 4,
   includeFloorTile = true,
   includeConcreteSlab = true,
-  wasteFactor = 1.05
+  wasteFactor = 1.0
 ) {
   const perimeter = 2 * (lengthM + widthM)
   const grossWallArea = perimeter * heightM

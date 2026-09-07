@@ -102,8 +102,7 @@
                         <div class="font-weight-bold text-body-1">Paredes con Fotos de Ladrillos</div>
                     </div>
                     <p class="text-body-2 text-medium-emphasis mb-0">
-                        Dosificación exacta para Ladrillo de 6 Huecos, Ladrillo Adobito, Ladrillo Visto (18H), Bloques de Hormigón y Ladrillos para
-                        Losa.
+                        Dosificación exacta para Ladrillo Adobito (10×5×21 cm) y Ladrillo de 6 Huecos (10×15×24 cm).
                     </p>
                 </v-card>
             </v-col>

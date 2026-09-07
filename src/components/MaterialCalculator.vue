@@ -30,26 +30,6 @@
             </v-tabs>
         </v-card>
 
-        <!-- Waste Factor Selector -->
-        <v-card class="pa-3 rounded-xl border-0 elevation-1 mb-4">
-            <div class="d-flex align-center justify-space-between mb-2">
-                <span class="text-caption font-weight-bold text-medium-emphasis">MARGEN DE DESPERDICIO (CORTES Y SOBRANTES)</span>
-                <v-chip size="x-small" color="primary" variant="flat">{{ (wasteFactor * 100 - 100).toFixed(0) }}% Extra</v-chip>
-            </div>
-            <v-chip-group v-model="wasteFactor" mandatory color="primary" class="d-flex justify-space-between">
-                <v-chip
-                    v-for="factor in WASTE_FACTORS"
-                    :key="factor.value"
-                    :value="factor.value"
-                    filter
-                    variant="tonal"
-                    class="flex-grow-1 text-center justify-center"
-                >
-                    {{ factor.label }}
-                </v-chip>
-            </v-chip-group>
-        </v-card>
-
         <!-- Main Content Tabs -->
         <v-window v-model="tab" class="pa-1">
             <!-- CUARTO COMPLETO -->
@@ -128,7 +108,7 @@
 
                     <div class="text-caption font-weight-bold text-medium-emphasis mb-2 mt-2">SELECCIONAR TIPO DE LADRILLO CON FOTO</div>
                     <v-row density="compact">
-                        <v-col v-for="brick in brickOptions" :key="brick.value" cols="6" sm="4" md="2.4">
+                        <v-col v-for="brick in brickOptions" :key="brick.value" cols="6" sm="6">
                             <v-card
                                 class="pa-2 rounded-lg text-center interactive-select-card h-100 d-flex flex-column align-center justify-space-between"
                                 :class="{ selected: roomData.brickType === brick.value }"
@@ -206,7 +186,7 @@
                                 <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-success text-center">
                                     <v-icon :icon="mdiDotsGrid" size="28" color="info" class="mb-1" />
                                     <div class="text-h5 font-weight-black">{{ results.room.totalRipioM3 }} <span class="text-caption">m³</span></div>
-                                    <div class="text-caption text-medium-emphasis">Ripio / Chispa</div>
+                                    <div class="text-caption text-medium-emphasis">Ripio</div>
                                     <v-chip size="x-small" color="info" variant="tonal" class="mt-1"
                                         >~{{ results.room.ripioWheelbarrows }} Carretillas</v-chip
                                     >
@@ -385,7 +365,7 @@
                                 <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-primary text-center">
                                     <v-icon :icon="mdiDotsGrid" size="28" color="warning" class="mb-1" />
                                     <div class="text-h5 font-weight-black">{{ results.concrete.ripioM3 }} <span class="text-caption">m³</span></div>
-                                    <div class="text-caption text-medium-emphasis">Ripio / Chispa</div>
+                                    <div class="text-caption text-medium-emphasis">Ripio</div>
                                     <v-chip size="x-small" color="warning" variant="tonal" class="mt-1"
                                         >~{{ results.concrete.ripioWheelbarrows }} Carretillas</v-chip
                                     >
@@ -457,7 +437,7 @@
 
                     <div class="text-caption font-weight-bold text-medium-emphasis mb-2 mt-4">2. SELECCIONAR TIPO DE LADRILLO CON FOTO</div>
                     <v-row density="compact">
-                        <v-col v-for="brick in brickOptions" :key="brick.value" cols="6" sm="4" md="2.4">
+                        <v-col v-for="brick in brickOptions" :key="brick.value" cols="6" sm="6">
                             <v-card
                                 class="pa-2 rounded-lg text-center interactive-select-card h-100 d-flex flex-column align-center justify-space-between"
                                 :class="{ selected: walls.brickType === brick.value }"
@@ -665,48 +645,25 @@
         mdiHomeCity,
     } from '@mdi/js';
     import { calculateConcrete, calculateWall, calculateTiling, calculateRoom } from '@/services/calculatorEngine';
-    import { WASTE_FACTORS } from '@/constants/constructionData';
 
     const tab = ref('room');
-    const wasteFactor = ref(1.05);
 
-    type BrickKey = '6_holes' | 'adobito' | '18_holes' | 'losa_sapera' | 'block';
+    type BrickKey = 'adobito' | '6_holes';
 
     const brickOptions = [
         {
-            title: 'Ladrillo 6 Huecos',
-            sub: '~40 un/m² (Muro estándar)',
-            value: '6_holes' as BrickKey,
-            image: '/images/ladrillo_6_huecos.jpg',
-            icon: mdiWall,
-        },
-        {
             title: 'Ladrillo Adobito',
-            sub: '~55 un/m² (Rústico / Artesanal)',
+            sub: '10×5×21 cm (~68 un/m²)',
             value: 'adobito' as BrickKey,
             image: '/images/ladrillo_adobito.jpg',
             icon: mdiWall,
         },
         {
-            title: 'Ladrillo Visto (18H)',
-            sub: '~36 un/m² (Fachada / Prensado)',
-            value: '18_holes' as BrickKey,
-            image: '/images/ladrillo_visto.jpg',
-            icon: mdiDotsGrid,
-        },
-        {
-            title: 'Ladrillo para Losa',
-            sub: '~8 un/m² (Sapera / Losa)',
-            value: 'losa_sapera' as BrickKey,
-            image: '/images/ladrillo_losa.jpg',
-            icon: mdiCubeOutline,
-        },
-        {
-            title: 'Bloque Hormigón',
-            sub: '~12.5 un/m² (Cemento)',
-            value: 'block' as BrickKey,
-            image: '/images/bloque_hormigon.jpg',
-            icon: mdiCubeOutline,
+            title: 'Ladrillo 6 Huecos',
+            sub: '10×15×24 cm (~24 un/m²)',
+            value: '6_holes' as BrickKey,
+            image: '/images/ladrillo_6_huecos.jpg',
+            icon: mdiWall,
         },
     ];
 
@@ -819,28 +776,21 @@
             roomData.openingsM2,
             true,
             true,
-            wasteFactor.value
+            1.0
         );
     };
 
     const calcConcrete = () => {
-        results.concrete = calculateConcrete(concrete.volume, concrete.proportion as any, wasteFactor.value);
+        results.concrete = calculateConcrete(concrete.volume, concrete.proportion as any, 1.0);
     };
 
     const calcWall = () => {
-        results.walls = calculateWall(walls.area, walls.brickType as any, '1:4', wasteFactor.value);
+        results.walls = calculateWall(walls.area, walls.brickType as any, '1:4', 1.0);
     };
 
     const calcTiles = () => {
-        results.tiles = calculateTiling(tiles.area, wasteFactor.value, tiles.tileWidthCm, tiles.tileHeightCm);
+        results.tiles = calculateTiling(tiles.area, 1.0, tiles.tileWidthCm, tiles.tileHeightCm);
     };
-
-    watch([wasteFactor], () => {
-        calcRoom();
-        calcConcrete();
-        calcWall();
-        calcTiles();
-    });
 
     onMounted(() => {
         calcRoom();

@@ -302,7 +302,7 @@
             <v-col cols="12" sm="6">
               <v-text-field
                 v-model.number="prices.gravel"
-                label="Ripio / Chispa de Río (por m³)"
+                label="Ripio (por m³)"
                 prefix="Bs."
                 type="number"
                 variant="outlined"
@@ -420,7 +420,7 @@ const loadPreset = (type: string) => {
     quoteForm.projectTitle = 'Construcción de Cuarto Completo (4×4m)'
     quoteForm.notes = 'Paredes con Ladrillo 6 Huecos, contrapiso y colocación de piso cerámico.'
     quoteForm.items = [
-      { description: 'Ladrillos 6 Huecos (~1,850 un.)', quantity: 1, unitPrice: 3200 },
+      { description: 'Ladrillos 6 Huecos (~1,060 un.)', quantity: 1, unitPrice: 3200 },
       { description: 'Cemento, Arena y Ripio', quantity: 1, unitPrice: 2800 },
       { description: 'Mano de Obra Global de Obra', quantity: 1, unitPrice: 4500 }
     ]

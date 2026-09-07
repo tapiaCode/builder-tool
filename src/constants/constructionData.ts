@@ -55,14 +55,11 @@ export const DOSIFICATIONS = {
   }
 }
 
-// Rendimientos
+// Rendimientos (Sin margen de desperdicio - cálculo exacto)
 export const YIELDS = {
-  BRICKS: { // Unidades por m2 incluyendo junta
-    '6_holes': 40,        // Ladrillo de 6 Huecos (~40 un/m²)
-    'adobito': 55,        // Ladrillo Adobito (~55 un/m²)
-    '18_holes': 36,       // Ladrillo Visto / 18 Huecos (~36 un/m²)
-    'losa_sapera': 8,     // Ladrillo para Losa (Sapera) (~8 un/m²)
-    'block': 12.5         // Bloque de Hormigón (~12.5 un/m²)
+  BRICKS: { // Unidades por m2 calculadas con junta estándar de 1.5 cm sin desperdicio
+    'adobito': 68.4,      // Ladrillo Adobito (10×5×21 cm -> 1 / (0.225 × 0.065) ≈ 68.4 un/m²)
+    '6_holes': 24,        // Ladrillo de 6 Huecos (10×15×24 cm -> 1 / (0.255 × 0.165) ≈ 23.8 un/m² -> nominal 24 un/m²)
   },
   TILES: {
     'cement_glue_kg_m2': 4, // Cemento cola (4 a 5 kg/m2)
@@ -74,9 +71,26 @@ export const YIELDS = {
   }
 }
 
-// Factores de desperdicio (Opciones)
-export const WASTE_FACTORS = [
-  { label: '5% (Preciso)', value: 1.05 },
-  { label: '10% (Estándar)', value: 1.10 },
-  { label: '15% (Complejo)', value: 1.15 }
-]
+// Especificaciones y dimensiones reales medidas de ladrillos
+export const BRICK_SPECS = {
+  'adobito': {
+    name: 'Ladrillo Adobito',
+    dimensionsCm: '10 × 5 × 21 cm',
+    lengthCm: 21,
+    heightCm: 5,
+    widthCm: 10,
+    jointCm: 1.5,
+    unitsPerM2: 68.4,
+    mortarM3PerM2: 0.028,
+  },
+  '6_holes': {
+    name: 'Ladrillo 6 Huecos',
+    dimensionsCm: '10 × 15 × 24 cm',
+    lengthCm: 24,
+    heightCm: 15,
+    widthCm: 10,
+    jointCm: 1.5,
+    unitsPerM2: 24,
+    mortarM3PerM2: 0.022,
+  }
+}
