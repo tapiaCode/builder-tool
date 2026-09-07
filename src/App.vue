@@ -31,10 +31,12 @@
         <v-icon :icon="mdiCalculator" />
         <span class="font-weight-bold">Cálculos</span>
       </v-btn>
-      <v-btn value="budget">
+      
+      <!-- <v-btn value="budget">
         <v-icon :icon="mdiCashMultiple" />
         <span class="font-weight-bold">Presupuesto</span>
-      </v-btn>
+      </v-btn> -->
+      
       <v-btn value="guides">
         <v-icon :icon="mdiBookOpenPageVariant" />
         <span class="font-weight-bold">Guías</span>
