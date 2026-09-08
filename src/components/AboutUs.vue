@@ -83,11 +83,11 @@
                         <v-avatar color="primary" variant="tonal" size="36" class="mr-3">
                             <v-icon :icon="mdiHomeCity" color="primary" size="20" />
                         </v-avatar>
-                        <div class="font-weight-bold text-body-1">Cuarto Completo (4×4m)</div>
+                        <div class="font-weight-bold text-body-1">Cuarto Completo (Habitación)</div>
                     </div>
                     <p class="text-body-2 text-medium-emphasis mb-0">
-                        Calcula en un solo paso la cantidad total de ladrillos, bolsas de cemento, arena, ripio, cerámica de piso y agua para
-                        construir una habitación completa.
+                        Calcula en un solo paso los materiales para muros, contrapiso y colocación de piso. Deduce aberturas de puertas y ventanas,
+                        entregando el total de ladrillos, bolsas de cemento, arena, ripio, cajas de piso, pegamento y pastina.
                     </p>
                 </v-card>
             </v-col>
@@ -102,12 +102,13 @@
                         <div class="font-weight-bold text-body-1">Paredes con Fotos de Ladrillos</div>
                     </div>
                     <p class="text-body-2 text-medium-emphasis mb-0">
-                        Dosificación exacta para Ladrillo Adobito (10×5×21 cm) y Ladrillo de 6 Huecos (10×15×24 cm).
+                        Dosificación exacta con fotografías reales para Ladrillo Adobito Comarapa (10×5×21 cm) y Ladrillo Cerámico de 6 Huecos
+                        (10×15×24 cm), calculando piezas, juntas y mortero en baldes y bolsas.
                     </p>
                 </v-card>
             </v-col>
 
-            <!-- Feature 3: Vaciados -->
+            <!-- Feature 3: Vaciados de Hormigón -->
             <v-col cols="12" sm="6">
                 <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
                     <div class="d-flex align-center mb-2">
@@ -117,14 +118,62 @@
                         <div class="font-weight-bold text-body-1">Vaciados de Hormigón</div>
                     </div>
                     <p class="text-body-2 text-medium-emphasis mb-0">
-                        Calcula cimientos, zapatas, columnas, vigas y contrapisos con medidas simples (Largo × Ancho × Grosor) y mezclas 1:2:3 y 1:2:4
-                        en baldes y carretillas.
+                        Cálculo para cimientos, zapatas, columnas, vigas, contrapisos y losas con medidas simples. Incluye proporciones prácticas
+                        1:2:3 (estructural) y 1:2:4 (pisos) en baldes de 20L, carretillas y bolsas de cemento.
                     </p>
                 </v-card>
             </v-col>
 
-            <!-- Feature 4: Presupuesto en Bs. -->
+            <!-- Feature 4: Pisos y Revestimientos -->
             <v-col cols="12" sm="6">
+                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
+                    <div class="d-flex align-center mb-2">
+                        <v-avatar color="teal" variant="tonal" size="36" class="mr-3">
+                            <v-icon :icon="mdiGrid" color="teal" size="20" />
+                        </v-avatar>
+                        <div class="font-weight-bold text-body-1">Pisos y Cerámicas</div>
+                    </div>
+                    <p class="text-body-2 text-medium-emphasis mb-0">
+                        Cálculo de superficie de colocación, número exacto de cajas a comprar según el formato y m² por caja, porcentaje de
+                        merma por recortes, bolsas de cemento cola y kilos de pastina para juntas.
+                    </p>
+                </v-card>
+            </v-col>
+
+            <!-- Feature 5: Guías y Recetario -->
+            <v-col cols="12" sm="6">
+                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
+                    <div class="d-flex align-center mb-2">
+                        <v-avatar color="success" variant="tonal" size="36" class="mr-3">
+                            <v-icon :icon="mdiBookOpenPageVariant" color="success" size="20" />
+                        </v-avatar>
+                        <div class="font-weight-bold text-body-1">Guías & Manual del Albañil</div>
+                    </div>
+                    <p class="text-body-2 text-medium-emphasis mb-0">
+                        Calculadora rápida interactiva por bolsa de cemento (conversión directa a baldes y carretillas), tablas de dosificación
+                        y recomendaciones constructivas para la zona de Comarapa.
+                    </p>
+                </v-card>
+            </v-col>
+
+            <!-- Feature 6: Off-Line -->
+            <v-col cols="12" sm="6">
+                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
+                    <div class="d-flex align-center mb-2">
+                        <v-avatar color="info" variant="tonal" size="36" class="mr-3">
+                            <v-icon :icon="mdiWifiOff" color="info" size="20" />
+                        </v-avatar>
+                        <div class="font-weight-bold text-body-1">100% Off-Line (Sin Internet)</div>
+                    </div>
+                    <p class="text-body-2 text-medium-emphasis mb-0">
+                        Funciona de forma autónoma sin depender de conexión a internet ni datos móviles, lista para usarse en el lugar de la
+                        construcción o en áreas rurales.
+                    </p>
+                </v-card>
+            </v-col>
+
+            <!-- Feature 7: Presupuesto en Bs. (Comentado temporalmente) -->
+            <!-- <v-col cols="12" sm="6">
                 <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
                     <div class="d-flex align-center mb-2">
                         <v-avatar color="success" variant="tonal" size="36" class="mr-3">
@@ -137,7 +186,7 @@
                         exportar el resumen.
                     </p>
                 </v-card>
-            </v-col>
+            </v-col> -->
         </v-row>
     </v-container>
 </template>
@@ -152,6 +201,9 @@
         mdiHomeCity,
         mdiWall,
         mdiCubeOutline,
+        mdiGrid,
+        mdiBookOpenPageVariant,
+        mdiWifiOff,
         mdiCashMultiple,
     } from '@mdi/js';
 </script>

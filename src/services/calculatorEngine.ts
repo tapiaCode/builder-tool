@@ -2,6 +2,8 @@
 import { DOSIFICATIONS, YIELDS, CONVERSIONS } from '@/constants/constructionData'
 
 export interface CalculationResult {
+  cementKg: number
+  cementBagsExact: number
   cementBags: number
   sandM3: number
   ripioM3: number
@@ -32,7 +34,11 @@ export function calculateConcrete(
   const ripioM3 = totalVolume * dosif.gravelM3
   const waterL = totalVolume * dosif.waterL
 
+  const exactBags = cementKg / CONVERSIONS.CEMENT_BAG_KG
+
   return {
+    cementKg: Number(cementKg.toFixed(1)),
+    cementBagsExact: Number(exactBags.toFixed(2)),
     cementBags: kgToBags(cementKg),
     sandM3: Number(sandM3.toFixed(2)),
     ripioM3: Number(ripioM3.toFixed(2)),
@@ -68,12 +74,20 @@ export function calculateWall(
   const sandM3 = totalMortarM3 * dosif.sandM3
   const waterL = totalMortarM3 * dosif.waterL
 
+  const exactBags = cementKg / CONVERSIONS.CEMENT_BAG_KG
+  const sandBuckets20L = Math.max(1, Math.ceil(sandM3 * CONVERSIONS.M3_TO_BUCKETS_20L))
+  const waterBuckets20L = Math.max(1, Math.ceil(waterL / 20))
+
   return {
     totalBricks,
+    cementKg: Number(cementKg.toFixed(1)),
+    cementBagsExact: Number(exactBags.toFixed(2)),
     cementBags: kgToBags(cementKg),
-    sandM3: Number(sandM3.toFixed(2)),
-    waterL: Math.ceil(waterL),
+    sandM3: Number(sandM3.toFixed(3)),
+    sandBuckets20L,
     sandWheelbarrows: m3ToWheelbarrows(sandM3),
+    waterL: Math.ceil(waterL),
+    waterBuckets20L,
     ripioM3: 0,
     ripioWheelbarrows: 0
   }
@@ -143,7 +157,9 @@ export function calculateRoom(
   const slabVolumeM3 = floorArea * 0.10
   const concreteRes = includeConcreteSlab ? calculateConcrete(slabVolumeM3, '1:2:3', wasteFactor) : null
 
-  const totalCementBags = wallRes.cementBags + (concreteRes ? concreteRes.cementBags : 0)
+  const totalCementKg = Number(((wallRes.cementKg || 0) + (concreteRes ? concreteRes.cementKg : 0)).toFixed(1))
+  const totalCementExactBags = Number((totalCementKg / CONVERSIONS.CEMENT_BAG_KG).toFixed(2))
+  const totalCementBags = Math.ceil(totalCementExactBags)
   const totalSandM3 = Number((wallRes.sandM3 + (concreteRes ? concreteRes.sandM3 : 0)).toFixed(2))
   const totalRipioM3 = concreteRes ? concreteRes.ripioM3 : 0
   const totalWaterL = wallRes.waterL + (concreteRes ? concreteRes.waterL : 0)
@@ -163,6 +179,8 @@ export function calculateRoom(
     glueBags20kg: tileRes ? tileRes.glueBags20kg : 0,
     groutBags1kg: tileRes ? tileRes.groutBags1kg : 0,
 
+    totalCementKg,
+    totalCementExactBags,
     totalCementBags,
     totalSandM3,
     totalRipioM3,

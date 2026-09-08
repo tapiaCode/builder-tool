@@ -1,6 +1,23 @@
 {
   "appId": "com.obrakit.offline",
-  "appName": "ObraKit Off-Line",
+  "appName": "ObraFácil Comarapa",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "plugins": {
+    "StatusBar": {
+      "overlaysWebView": true
+    },
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "backgroundColor": "#0F172A",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    },
+    "Keyboard": {
+      "resize": "body",
+      "resizeOnFullScreen": true
+    }
+  }
 }

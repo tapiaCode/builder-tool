@@ -1,5 +1,5 @@
 <template>
-    <v-container class="py-4">
+    <v-container class="pt-4 pb-12">
         <!-- Header Banner -->
         <v-card class="mb-4 overflow-hidden rounded-xl border-0 elevation-4 stat-card-gradient-primary">
             <v-card-text class="pa-5">
@@ -20,13 +20,13 @@
 
         <!-- Navigation Tabs -->
         <v-card class="rounded-xl border-0 elevation-2 mb-4">
-            <v-tabs v-model="tab" color="primary" grow align-tabs="center" class="pa-1">
-                <v-tab value="room" class="rounded-lg text-none font-weight-bold">
-                    <v-icon :icon="mdiHomeOutline" class="mr-1" /> Cuarto Completo
+            <v-tabs v-model="tab" color="primary" grow align-tabs="center" class="pa-1" show-arrows>
+                <v-tab value="room" class="rounded-lg text-none font-weight-bold px-2 px-sm-4">
+                    <v-icon :icon="mdiHomeOutline" class="mr-1" /> Cuarto<span class="d-none d-sm-inline">&nbsp;Completo</span>
                 </v-tab>
-                <v-tab value="walls" class="rounded-lg text-none font-weight-bold"> <v-icon :icon="mdiWall" class="mr-1" /> Paredes </v-tab>
-                <v-tab value="concrete" class="rounded-lg text-none font-weight-bold"> <v-icon :icon="mdiCubeOutline" class="mr-1" /> Vaciado </v-tab>
-                <v-tab value="tiles" class="rounded-lg text-none font-weight-bold"> <v-icon :icon="mdiGrid" class="mr-1" /> Pisos </v-tab>
+                <v-tab value="walls" class="rounded-lg text-none font-weight-bold px-2 px-sm-4"> <v-icon :icon="mdiWall" class="mr-1" /> Paredes </v-tab>
+                <v-tab value="concrete" class="rounded-lg text-none font-weight-bold px-2 px-sm-4"> <v-icon :icon="mdiCubeOutline" class="mr-1" /> Vaciado </v-tab>
+                <v-tab value="tiles" class="rounded-lg text-none font-weight-bold px-2 px-sm-4"> <v-icon :icon="mdiGrid" class="mr-1" /> Pisos </v-tab>
             </v-tabs>
         </v-card>
 
@@ -111,7 +111,7 @@
                         <v-col v-for="brick in brickOptions" :key="brick.value" cols="6" sm="6">
                             <v-card
                                 class="pa-2 rounded-lg text-center interactive-select-card h-100 d-flex flex-column align-center justify-space-between"
-                                :class="{ selected: roomData.brickType === brick.value }"
+                                :class="{selected: roomData.brickType === brick.value}"
                                 @click="
                                     roomData.brickType = brick.value;
                                     calcRoom();
@@ -167,12 +167,12 @@
                                     <v-icon :icon="mdiPackageVariant" size="28" color="accent" class="mb-1" />
                                     <div class="text-h5 font-weight-black text-accent">{{ results.room.totalCementBags }}</div>
                                     <div class="text-caption text-medium-emphasis">Bolsas Cemento</div>
-                                    <v-chip size="x-small" color="accent" variant="tonal" class="mt-1">50 kg c/u</v-chip>
+                                    <v-chip size="x-small" color="accent" variant="tonal" class="mt-1">50 kg c/u ({{ results.room.totalCementKg }} kg total)</v-chip>
                                 </v-card>
                             </v-col>
 
                             <v-col cols="6" sm="3">
-                                <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-primary text-center">
+                                <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-warning text-center">
                                     <v-icon :icon="mdiTruckCargoContainer" size="28" color="warning" class="mb-1" />
                                     <div class="text-h5 font-weight-black">{{ results.room.totalSandM3 }} <span class="text-caption">m³</span></div>
                                     <div class="text-caption text-medium-emphasis">Arena Corriente</div>
@@ -292,7 +292,7 @@
                         <v-col cols="12" sm="6">
                             <v-card
                                 class="pa-3 rounded-lg text-left interactive-select-card h-100"
-                                :class="{ selected: concrete.proportion === '1:2:3' }"
+                                :class="{selected: concrete.proportion === '1:2:3'}"
                                 @click="
                                     concrete.proportion = '1:2:3';
                                     calcConcrete();
@@ -312,7 +312,7 @@
                         <v-col cols="12" sm="6">
                             <v-card
                                 class="pa-3 rounded-lg text-left interactive-select-card h-100"
-                                :class="{ selected: concrete.proportion === '1:2:4' }"
+                                :class="{selected: concrete.proportion === '1:2:4'}"
                                 @click="
                                     concrete.proportion = '1:2:4';
                                     calcConcrete();
@@ -344,9 +344,16 @@
                             <v-col cols="6" sm="3">
                                 <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-primary text-center">
                                     <v-icon :icon="mdiPackageVariant" size="28" color="primary" class="mb-1" />
-                                    <div class="text-h5 font-weight-black">{{ results.concrete.cementBags }}</div>
-                                    <div class="text-caption text-medium-emphasis">Bolsas de Cemento</div>
-                                    <v-chip size="x-small" color="primary" variant="tonal" class="mt-1">50 kg c/u</v-chip>
+                                    <template v-if="results.concrete.cementKg < 50">
+                                        <div class="text-h5 font-weight-black">{{ results.concrete.cementKg }} <span class="text-caption font-weight-bold">kg</span></div>
+                                        <div class="text-caption text-medium-emphasis">Cemento (Consumo)</div>
+                                        <v-chip size="x-small" color="primary" variant="tonal" class="mt-1">~{{ results.concrete.cementBagsExact }} bolsa (Comprar 1)</v-chip>
+                                    </template>
+                                    <template v-else>
+                                        <div class="text-h5 font-weight-black">{{ results.concrete.cementBags }}</div>
+                                        <div class="text-caption text-medium-emphasis">Bolsas de Cemento</div>
+                                        <v-chip size="x-small" color="primary" variant="tonal" class="mt-1">50 kg c/u ({{ results.concrete.cementKg }} kg)</v-chip>
+                                    </template>
                                 </v-card>
                             </v-col>
 
@@ -362,7 +369,7 @@
                             </v-col>
 
                             <v-col cols="6" sm="3">
-                                <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-primary text-center">
+                                <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-warning text-center">
                                     <v-icon :icon="mdiDotsGrid" size="28" color="warning" class="mb-1" />
                                     <div class="text-h5 font-weight-black">{{ results.concrete.ripioM3 }} <span class="text-caption">m³</span></div>
                                     <div class="text-caption text-medium-emphasis">Ripio</div>
@@ -440,7 +447,7 @@
                         <v-col v-for="brick in brickOptions" :key="brick.value" cols="6" sm="6">
                             <v-card
                                 class="pa-2 rounded-lg text-center interactive-select-card h-100 d-flex flex-column align-center justify-space-between"
-                                :class="{ selected: walls.brickType === brick.value }"
+                                :class="{selected: walls.brickType === brick.value}"
                                 @click="
                                     walls.brickType = brick.value;
                                     calcWall();
@@ -468,25 +475,85 @@
                     <div v-if="results.walls">
                         <h3 class="text-subtitle-1 font-weight-bold mb-3 d-flex align-center">
                             <v-icon :icon="mdiCheckCircle" color="success" class="mr-2" />
-                            Materiales Necesarios para Pared
+                            Materiales Necesarios para Pared ({{ walls.area }} m²)
                         </h3>
 
                         <v-row density="compact">
-                            <v-col cols="6">
-                                <v-card class="pa-4 rounded-xl border-0 stat-card-gradient-primary text-center">
-                                    <v-icon :icon="mdiWall" size="32" color="primary" class="mb-1" />
-                                    <div class="text-h4 font-weight-black text-primary">{{ results.walls.totalBricks }}</div>
-                                    <div class="text-caption font-weight-bold text-medium-emphasis">Ladrillos (Unidades)</div>
+                            <!-- 1. Ladrillos -->
+                            <v-col cols="6" sm="3">
+                                <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-primary text-center h-100 d-flex flex-column justify-space-between align-center">
+                                    <div>
+                                        <v-icon :icon="mdiWall" size="28" color="primary" class="mb-1" />
+                                        <div class="text-h5 font-weight-black text-primary">{{ results.walls.totalBricks }}</div>
+                                        <div class="text-caption font-weight-bold text-medium-emphasis">Ladrillos (Unidades)</div>
+                                    </div>
+                                    <v-chip size="x-small" color="primary" variant="tonal" class="mt-2">
+                                        {{ selectedWallBrickTitle }}
+                                    </v-chip>
                                 </v-card>
                             </v-col>
-                            <v-col cols="6">
-                                <v-card class="pa-4 rounded-xl border-0 stat-card-gradient-accent text-center">
-                                    <v-icon :icon="mdiPackageVariant" size="32" color="accent" class="mb-1" />
-                                    <div class="text-h4 font-weight-black text-accent">{{ results.walls.cementBags }}</div>
-                                    <div class="text-caption font-weight-bold text-medium-emphasis">Bolsas Cemento (Mezcla)</div>
+
+                            <!-- 2. Cemento -->
+                            <v-col cols="6" sm="3">
+                                <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-accent text-center h-100 d-flex flex-column justify-space-between align-center">
+                                    <div>
+                                        <v-icon :icon="mdiPackageVariant" size="28" color="accent" class="mb-1" />
+                                        <template v-if="results.walls.cementKg < 50">
+                                            <div class="text-h5 font-weight-black text-accent">{{ results.walls.cementKg }} <span class="text-caption font-weight-bold">kg</span></div>
+                                            <div class="text-caption font-weight-bold text-medium-emphasis">Cemento (Consumo real)</div>
+                                        </template>
+                                        <template v-else>
+                                            <div class="text-h5 font-weight-black text-accent">{{ results.walls.cementBags }} <span class="text-caption font-weight-bold">bolsas</span></div>
+                                            <div class="text-caption font-weight-bold text-medium-emphasis">Bolsas Cemento (50kg)</div>
+                                        </template>
+                                    </div>
+                                    <v-chip size="x-small" color="accent" variant="tonal" class="mt-2">
+                                        <template v-if="results.walls.cementKg < 50">
+                                            ~{{ results.walls.cementBagsExact }} bolsa (Comprar 1)
+                                        </template>
+                                        <template v-else>
+                                            {{ results.walls.cementKg }} kg (~{{ results.walls.cementBagsExact }} bol)
+                                        </template>
+                                    </v-chip>
+                                </v-card>
+                            </v-col>
+
+                            <!-- 3. Arena Corriente -->
+                            <v-col cols="6" sm="3">
+                                <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-warning text-center h-100 d-flex flex-column justify-space-between align-center">
+                                    <div>
+                                        <v-icon :icon="mdiTruckCargoContainer" size="28" color="warning" class="mb-1" />
+                                        <div class="text-h5 font-weight-black">
+                                            {{ results.walls.sandM3 < 0.05 ? results.walls.sandBuckets20L : results.walls.sandM3 }}
+                                            <span class="text-caption font-weight-bold">{{ results.walls.sandM3 < 0.05 ? 'Baldes' : 'm³' }}</span>
+                                        </div>
+                                        <div class="text-caption font-weight-bold text-medium-emphasis">Arena de Asentado</div>
+                                    </div>
+                                    <v-chip size="x-small" color="warning" variant="tonal" class="mt-2">
+                                        {{ results.walls.sandBuckets20L }} baldes (~{{ results.walls.sandM3 }} m³)
+                                    </v-chip>
+                                </v-card>
+                            </v-col>
+
+                            <!-- 4. Agua -->
+                            <v-col cols="6" sm="3">
+                                <v-card class="pa-3 rounded-xl border-0 stat-card-gradient-success text-center h-100 d-flex flex-column justify-space-between align-center">
+                                    <div>
+                                        <v-icon :icon="mdiWater" size="28" color="info" class="mb-1" />
+                                        <div class="text-h5 font-weight-black text-info">{{ results.walls.waterL }} <span class="text-caption font-weight-bold">L</span></div>
+                                        <div class="text-caption font-weight-bold text-medium-emphasis">Agua para Mezcla</div>
+                                    </div>
+                                    <v-chip size="x-small" color="info" variant="tonal" class="mt-2">
+                                        ~{{ results.walls.waterBuckets20L }} Baldes (20L)
+                                    </v-chip>
                                 </v-card>
                             </v-col>
                         </v-row>
+
+                        <!-- Aclaración didáctica cuando es menos de 1 bolsa -->
+                        <v-alert v-if="results.walls.cementKg < 50" type="info" variant="tonal" border="start" density="compact" class="mt-3 py-2 text-caption">
+                            <strong>💡 Aclaración sobre el Cemento:</strong> Para construir esta pared de <strong>{{ walls.area }} m²</strong> se consumen exactamente <strong>{{ results.walls.cementKg }} kg de cemento</strong> (~{{ results.walls.cementBagsExact }} bolsa de 50 kg). En la ferretería compras como mínimo 1 bolsa entera, la cual te alcanza para asentar hasta <strong>~{{ walls.brickType === '6_holes' ? '6.7' : '5.3' }} m²</strong> de pared.
+                        </v-alert>
                     </div>
                 </v-expand-transition>
             </v-window-item>
@@ -626,7 +693,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, watch, onMounted, computed } from 'vue';
+    import {ref, reactive, watch, onMounted, computed} from 'vue';
     import {
         mdiCalculator,
         mdiCubeOutline,
@@ -644,7 +711,7 @@
         mdiRuler,
         mdiHomeCity,
     } from '@mdi/js';
-    import { calculateConcrete, calculateWall, calculateTiling, calculateRoom } from '@/services/calculatorEngine';
+    import {calculateConcrete, calculateWall, calculateTiling, calculateRoom} from '@/services/calculatorEngine';
 
     const tab = ref('room');
 
@@ -655,14 +722,14 @@
             title: 'Ladrillo Adobito',
             sub: '10×5×21 cm (~68 un/m²)',
             value: 'adobito' as BrickKey,
-            image: '/images/ladrillo_adobito.jpg',
+            image: '/images/ladrillo_adobito.png',
             icon: mdiWall,
         },
         {
             title: 'Ladrillo 6 Huecos',
             sub: '10×15×24 cm (~24 un/m²)',
             value: '6_holes' as BrickKey,
-            image: '/images/ladrillo_6_huecos.jpg',
+            image: '/images/ladrillo_6_huecos.png',
             icon: mdiWall,
         },
     ];
@@ -683,7 +750,12 @@
     });
 
     const selectedBrickTitle = computed(() => {
-        const item = brickOptions.find(b => b.value === roomData.brickType);
+        const item = brickOptions.find((b) => b.value === roomData.brickType);
+        return item ? item.title : 'Ladrillo';
+    });
+
+    const selectedWallBrickTitle = computed(() => {
+        const item = brickOptions.find((b) => b.value === walls.brickType);
         return item ? item.title : 'Ladrillo';
     });
 
@@ -694,7 +766,7 @@
         thickness: 10,
     });
 
-    const concrete = reactive<{ volume: number; proportion: '1:2:3' | '1:2:4' }>({
+    const concrete = reactive<{volume: number; proportion: '1:2:3' | '1:2:4'}>({
         volume: 2.0,
         proportion: '1:2:3',
     });
@@ -711,7 +783,7 @@
         height: 2.5,
     });
 
-    const walls = reactive<{ area: number; brickType: BrickKey }>({
+    const walls = reactive<{area: number; brickType: BrickKey}>({
         area: 25,
         brickType: '6_holes',
     });
@@ -741,17 +813,17 @@
     };
 
     const TILE_PRESETS = [
-        { label: '30x30', w: 30, h: 30 },
-        { label: '40x40', w: 40, h: 40 },
-        { label: '50x50', w: 50, h: 50 },
-        { label: '60x60', w: 60, h: 60 },
-        { label: '60x120', w: 60, h: 120 },
-        { label: 'Otro', w: 40, h: 40 },
+        {label: '30x30', w: 30, h: 30},
+        {label: '40x40', w: 40, h: 40},
+        {label: '50x50', w: 50, h: 50},
+        {label: '60x60', w: 60, h: 60},
+        {label: '60x120', w: 60, h: 120},
+        {label: 'Otro', w: 40, h: 40},
     ];
 
     const selectedTilePreset = ref('40x40');
 
-    const selectTilePreset = (preset: { label: string; w: number; h: number }) => {
+    const selectTilePreset = (preset: {label: string; w: number; h: number}) => {
         selectedTilePreset.value = preset.label;
         if (preset.label !== 'Otro') {
             tiles.tileWidthCm = preset.w;
@@ -776,7 +848,7 @@
             roomData.openingsM2,
             true,
             true,
-            1.0
+            1.0,
         );
     };
 
