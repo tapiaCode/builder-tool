@@ -1,8 +1,8 @@
 <template>
-    <v-container class="pt-4 pb-12">
+    <div class="calculator-root pb-6">
         <!-- Header Banner -->
-        <v-card class="mb-4 overflow-hidden rounded-xl border-0 elevation-4 stat-card-gradient-primary">
-            <v-card-text class="pa-5">
+        <v-card class="mb-3 overflow-hidden rounded-xl border-0 elevation-4 stat-card-gradient-primary">
+            <v-card-text class="pa-4 pa-sm-5">
                 <div class="d-flex align-center justify-space-between">
                     <div>
                         <div class="text-overline text-primary font-weight-bold tracking-wider">CÁLCULO FÁCIL Y PRÁCTICO</div>
@@ -11,7 +11,7 @@
                             Ladrillos locales con foto, bolsas de cemento, ripio y piezas en medidas simples
                         </p>
                     </div>
-                    <v-avatar color="primary" size="52" class="elevation-4 pulse-badge">
+                    <v-avatar color="primary" size="52" class="elevation-4 pulse-badge flex-shrink-0 ml-2">
                         <v-icon :icon="mdiHomeCity" size="28" color="white" />
                     </v-avatar>
                 </div>
@@ -19,19 +19,25 @@
         </v-card>
 
         <!-- Navigation Tabs -->
-        <v-card class="rounded-xl border-0 elevation-2 mb-4">
-            <v-tabs v-model="tab" color="primary" grow align-tabs="center" class="pa-1" show-arrows>
-                <v-tab value="room" class="rounded-lg text-none font-weight-bold px-2 px-sm-4">
-                    <v-icon :icon="mdiHomeOutline" class="mr-1" /> Cuarto<span class="d-none d-sm-inline">&nbsp;Completo</span>
+        <v-card class="rounded-xl border-0 elevation-2 mb-3">
+            <v-tabs v-model="tab" color="primary" grow align-tabs="center" class="pa-1" density="comfortable">
+                <v-tab value="room" class="rounded-lg text-none font-weight-bold px-1 px-sm-3 text-caption text-sm-body-2">
+                    <v-icon :icon="mdiHomeOutline" class="mr-1" size="18" /> Cuarto<span class="d-none d-sm-inline">&nbsp;Completo</span>
                 </v-tab>
-                <v-tab value="walls" class="rounded-lg text-none font-weight-bold px-2 px-sm-4"> <v-icon :icon="mdiWall" class="mr-1" /> Paredes </v-tab>
-                <v-tab value="concrete" class="rounded-lg text-none font-weight-bold px-2 px-sm-4"> <v-icon :icon="mdiCubeOutline" class="mr-1" /> Vaciado </v-tab>
-                <v-tab value="tiles" class="rounded-lg text-none font-weight-bold px-2 px-sm-4"> <v-icon :icon="mdiGrid" class="mr-1" /> Pisos </v-tab>
+                <v-tab value="walls" class="rounded-lg text-none font-weight-bold px-1 px-sm-3 text-caption text-sm-body-2">
+                    <v-icon :icon="mdiWall" class="mr-1" size="18" /> Paredes
+                </v-tab>
+                <v-tab value="concrete" class="rounded-lg text-none font-weight-bold px-1 px-sm-3 text-caption text-sm-body-2">
+                    <v-icon :icon="mdiCubeOutline" class="mr-1" size="18" /> Vaciado
+                </v-tab>
+                <v-tab value="tiles" class="rounded-lg text-none font-weight-bold px-1 px-sm-3 text-caption text-sm-body-2">
+                    <v-icon :icon="mdiGrid" class="mr-1" size="18" /> Pisos
+                </v-tab>
             </v-tabs>
         </v-card>
 
         <!-- Main Content Tabs -->
-        <v-window v-model="tab" class="pa-1">
+        <v-window v-model="tab" class="pa-0">
             <!-- CUARTO COMPLETO -->
             <v-window-item value="room">
                 <v-card class="rounded-xl border-0 elevation-2 pa-4 mb-4">
@@ -689,7 +695,7 @@
                 </v-expand-transition>
             </v-window-item>
         </v-window>
-    </v-container>
+    </div>
 </template>
 
 <script setup lang="ts">

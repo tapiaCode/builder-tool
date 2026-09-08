@@ -15,8 +15,8 @@
       </v-btn>
     </v-app-bar>
 
-    <v-main class="bg-background pb-16">
-      <v-container class="pa-2 max-width-container">
+    <v-main class="bg-background">
+      <v-container class="px-2 py-0 max-width-container" fluid>
         <v-fade-transition mode="out-in">
           <component :is="currentComponent" />
         </v-fade-transition>

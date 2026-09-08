@@ -38,6 +38,12 @@ body {
   box-sizing: border-box !important;
 }
 
+/* Ensure v-main accounts for the full safe-area height of header and bottom nav */
+.v-main {
+  padding-top: calc(56px + env(safe-area-inset-top, 0px) + 8px) !important;
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 24px) !important;
+}
+
 .v-theme--obrakitThemeDark .glass-header {
   background: rgba(15, 23, 42, 0.85) !important;
   border-bottom: 1px solid rgba(255, 107, 0, 0.25) !important;

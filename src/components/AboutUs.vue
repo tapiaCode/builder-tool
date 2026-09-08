@@ -1,8 +1,8 @@
 <template>
-    <v-container class="py-4">
+    <div class="about-root pb-6">
         <!-- Header Banner -->
-        <v-card class="mb-4 overflow-hidden rounded-xl border-0 elevation-4 stat-card-gradient-primary">
-            <v-card-text class="pa-5">
+        <v-card class="mb-3 overflow-hidden rounded-xl border-0 elevation-4 stat-card-gradient-primary">
+            <v-card-text class="pa-4 pa-sm-5">
                 <div class="d-flex align-center justify-space-between">
                     <div>
                         <div class="text-overline text-primary font-weight-bold tracking-wider">COMARAPA — SANTA CRUZ</div>
@@ -188,7 +188,7 @@
                 </v-card>
             </v-col> -->
         </v-row>
-    </v-container>
+    </div>
 </template>
 
 <script setup lang="ts">

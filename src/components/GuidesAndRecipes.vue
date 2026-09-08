@@ -1,8 +1,8 @@
 <template>
-    <v-container class="py-4">
+    <div class="guides-root pb-6">
         <!-- Header Banner -->
-        <v-card class="mb-4 overflow-hidden rounded-xl stat-card-gradient-success border-0 elevation-4">
-            <v-card-text class="pa-5">
+        <v-card class="mb-3 overflow-hidden rounded-xl stat-card-gradient-success border-0 elevation-4">
+            <v-card-text class="pa-4 pa-sm-5">
                 <div class="d-flex align-center justify-space-between">
                     <div>
                         <div class="text-overline text-success font-weight-bold tracking-wider">MANUAL DEL ALBAÑIL — BOLIVIA</div>
@@ -472,7 +472,7 @@
                 </v-expansion-panel-text>
             </v-expansion-panel>
         </v-expansion-panels>
-    </v-container>
+    </div>
 </template>
 
 <script setup lang="ts">
