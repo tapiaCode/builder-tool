@@ -1,20 +1,6 @@
 <template>
     <div class="guides-root pb-6">
-        <!-- Header Banner -->
-        <v-card class="mb-3 overflow-hidden rounded-xl stat-card-gradient-success border-0 elevation-4">
-            <v-card-text class="pa-4 pa-sm-5">
-                <div class="d-flex align-center justify-space-between">
-                    <div>
-                        <div class="text-overline text-success font-weight-bold tracking-wider">MANUAL DEL ALBAÑIL — BOLIVIA</div>
-                        <h2 class="text-h5 font-weight-black text-on-surface mb-1">Guías & Recetario Técnico</h2>
-                        <p class="text-body-2 text-medium-emphasis mb-0">Medidas prácticas de obra: baldes, carretillas, fierros y ladrillos locales</p>
-                    </div>
-                    <v-avatar color="success" size="52" class="elevation-4 pulse-badge flex-shrink-0 ml-2">
-                        <v-icon :icon="mdiBookOpenPageVariant" size="28" color="white" />
-                    </v-avatar>
-                </div>
-            </v-card-text>
-        </v-card>
+        <PageHeader eyebrow="Manual del albañil" title="Guías y recetario" subtitle="Medidas prácticas: baldes, carretillas, fierros y ladrillos." />
 
         <!-- Interactive Quick Mixer Calculator -->
         <v-card class="rounded-xl border-0 elevation-2 pa-4 mb-4">
@@ -476,6 +462,7 @@
 </template>
 
 <script setup lang="ts">
+import PageHeader from '@/components/PageHeader.vue';
 import { ref, computed } from 'vue'
 import {
     mdiBookOpenPageVariant,

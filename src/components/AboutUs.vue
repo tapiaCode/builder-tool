@@ -1,218 +1,171 @@
 <template>
     <div class="about-root pb-6">
-        <!-- Header Banner -->
-        <v-card class="mb-3 overflow-hidden rounded-xl border-0 elevation-4 stat-card-gradient-primary">
-            <v-card-text class="pa-4 pa-sm-5">
-                <div class="d-flex align-center justify-space-between">
-                    <div>
-                        <div class="text-overline text-primary font-weight-bold tracking-wider">COMARAPA — SANTA CRUZ</div>
-                        <h2 class="text-h5 font-weight-black text-on-surface mb-1">Acerca de Obrafácil</h2>
-                        <p class="text-body-2 text-medium-emphasis mb-0">Información del proyecto y guía rápida de uso</p>
-                    </div>
-                    <v-avatar color="primary" size="52" class="elevation-4 pulse-badge">
-                        <v-icon :icon="mdiInformation" size="28" color="white" />
-                    </v-avatar>
-                </div>
-            </v-card-text>
-        </v-card>
+        <PageHeader eyebrow="Acerca de" title="ObraFácil Comarapa" subtitle="Herramienta de cálculo y presupuestos para la obra." />
 
-        <!-- Project Purpose & Credits -->
-        <v-card class="rounded-xl border-0 elevation-2 pa-5 mb-4 border-start-primary">
-            <div class="d-flex align-center mb-3">
-                <v-avatar color="red-accent-3" size="44" class="mr-3 elevation-2">
-                    <v-icon :icon="mdiHeart" color="white" size="24" />
-                </v-avatar>
-                <div>
-                    <h3 class="text-h6 font-weight-black">Hecho para la Comunidad de Comarapa</h3>
-                    <div class="text-caption text-medium-emphasis">Proyecto escolar de impacto comunitario</div>
-                </div>
-            </div>
+        <!-- Creator -->
+        <v-card class="creator-card pa-6 mb-4 text-center" flat>
+            <v-avatar color="primary" size="88" rounded="xl" class="mb-4 creator-avatar">
+                <span class="creator-initials">TC</span>
+            </v-avatar>
+            <div class="creator-eyebrow text-primary mb-1">Creado por</div>
+            <h2 class="creator-name mb-1">{{ creator.name }}</h2>
+            <div class="text-body-1 text-medium-emphasis mb-5">{{ creator.role }}</div>
 
-            <p class="text-body-2 text-high-emphasis mb-3 line-height-relaxed">
-                <strong>Obrafácil Comarapa</strong> es un proyecto creado con mucho cariño para apoyar a los maestros de obra, albañiles,
-                constructores y familias de nuestra querida comunidad de <strong>Comarapa</strong> (Santa Cruz, Bolivia). Nuestro objetivo es brindar
-                una herramienta fácil, entendible y práctica para calcular materiales y estimar costos de construcción de forma rápida.
-            </p>
-
-            <v-divider class="my-4" />
-
-            <!-- Team Members -->
-            <div class="d-flex align-center mb-3">
-                <v-icon :icon="mdiSchool" color="primary" class="mr-2" />
-                <h4 class="text-subtitle-1 font-weight-bold">Desarrollado por Estudiantes de 6to de Secundaria:</h4>
-            </div>
-
-            <v-row density="compact" class="mt-1">
-                <v-col cols="12" sm="6">
-                    <v-card class="pa-3 rounded-lg border-0 bg-surface-variant d-flex align-center">
-                        <v-avatar color="primary" size="40" class="mr-3 font-weight-bold text-white"> FT </v-avatar>
-                        <div>
-                            <div class="font-weight-bold text-subtitle-2">Fiorella Tapia Berbetty</div>
-                            <div class="text-caption text-medium-emphasis">Estudiante de 6to de Secundaria</div>
-                        </div>
-                    </v-card>
-                </v-col>
-
-                <v-col cols="12" sm="6">
-                    <v-card class="pa-3 rounded-lg border-0 bg-surface-variant d-flex align-center">
-                        <v-avatar color="accent" size="40" class="mr-3 font-weight-bold text-white"> MT </v-avatar>
-                        <div>
-                            <div class="font-weight-bold text-subtitle-2">Mishell Abigail Toledo Flores</div>
-                            <div class="text-caption text-medium-emphasis">Estudiante de 6to de Secundaria</div>
-                        </div>
-                    </v-card>
-                </v-col>
-            </v-row>
-
-            <div class="d-flex align-center justify-end mt-4 text-caption text-medium-emphasis">
-                <v-icon :icon="mdiMapMarker" color="primary" size="16" class="mr-1" /> Comarapa, Bolivia
+            <div class="d-flex flex-wrap justify-center ga-2">
+                <v-btn
+                    :href="creator.githubUrl"
+                    target="_blank"
+                    rel="noopener"
+                    variant="flat"
+                    size="large"
+                    :prepend-icon="mdiGithub"
+                    class="creator-btn github-btn"
+                >
+                    GitHub
+                </v-btn>
+                <v-btn
+                    :href="repoUrl"
+                    target="_blank"
+                    rel="noopener"
+                    variant="tonal"
+                    color="primary"
+                    size="large"
+                    :prepend-icon="mdiSourceBranch"
+                    class="creator-btn"
+                >
+                    Código fuente
+                </v-btn>
             </div>
         </v-card>
 
-        <!-- Guide: What can be calculated? -->
-        <h3 class="text-subtitle-1 font-weight-bold mb-3 d-flex align-center ml-1">
-            <v-icon :icon="mdiHelpCircleOutline" color="primary" class="mr-2" />
-            ¿Qué puedes calcular en Obrafácil Comarapa?
-        </h3>
+        <!-- App info -->
+        <div class="section-label px-1 mb-2">Información de la app</div>
+        <v-card class="mb-4" flat>
+            <v-list lines="one" bg-color="transparent" class="py-1">
+                <v-list-item v-for="row in infoRows" :key="row.label" :prepend-icon="row.icon" min-height="56">
+                    <v-list-item-title class="text-body-2 text-medium-emphasis">{{ row.label }}</v-list-item-title>
+                    <template #append>
+                        <span class="text-body-2 font-weight-bold">{{ row.value }}</span>
+                    </template>
+                </v-list-item>
+            </v-list>
+        </v-card>
 
-        <v-row density="comfortable">
-            <!-- Feature 1: Cuarto Completo -->
-            <v-col cols="12" sm="6">
-                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
-                    <div class="d-flex align-center mb-2">
-                        <v-avatar color="primary" variant="tonal" size="36" class="mr-3">
-                            <v-icon :icon="mdiHomeCity" color="primary" size="20" />
+        <!-- Features -->
+        <div class="section-label px-1 mb-2">Qué puedes hacer</div>
+        <v-card class="mb-4" flat>
+            <v-list lines="two" bg-color="transparent" class="py-1">
+                <v-list-item v-for="f in features" :key="f.title" min-height="64">
+                    <template #prepend>
+                        <v-avatar :color="f.color" variant="tonal" rounded="lg" size="40" class="mr-1">
+                            <v-icon :icon="f.icon" size="22" />
                         </v-avatar>
-                        <div class="font-weight-bold text-body-1">Cuarto Completo (Habitación)</div>
-                    </div>
-                    <p class="text-body-2 text-medium-emphasis mb-0">
-                        Calcula en un solo paso los materiales para muros, contrapiso y colocación de piso. Deduce aberturas de puertas y ventanas,
-                        entregando el total de ladrillos, bolsas de cemento, arena, ripio, cajas de piso, pegamento y pastina.
-                    </p>
-                </v-card>
-            </v-col>
+                    </template>
+                    <v-list-item-title class="font-weight-bold">{{ f.title }}</v-list-item-title>
+                    <v-list-item-subtitle class="feature-sub">{{ f.text }}</v-list-item-subtitle>
+                </v-list-item>
+            </v-list>
+        </v-card>
 
-            <!-- Feature 2: Paredes y Ladrillos -->
-            <v-col cols="12" sm="6">
-                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
-                    <div class="d-flex align-center mb-2">
-                        <v-avatar color="accent" variant="tonal" size="36" class="mr-3">
-                            <v-icon :icon="mdiWall" color="accent" size="20" />
-                        </v-avatar>
-                        <div class="font-weight-bold text-body-1">Paredes con Fotos de Ladrillos</div>
-                    </div>
-                    <p class="text-body-2 text-medium-emphasis mb-0">
-                        Dosificación exacta con fotografías reales para Ladrillo Adobito Comarapa (10×5×21 cm) y Ladrillo Cerámico de 6 Huecos
-                        (10×15×24 cm), calculando piezas, juntas y mortero en baldes y bolsas.
-                    </p>
-                </v-card>
-            </v-col>
-
-            <!-- Feature 3: Vaciados de Hormigón -->
-            <v-col cols="12" sm="6">
-                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
-                    <div class="d-flex align-center mb-2">
-                        <v-avatar color="warning" variant="tonal" size="36" class="mr-3">
-                            <v-icon :icon="mdiCubeOutline" color="warning" size="20" />
-                        </v-avatar>
-                        <div class="font-weight-bold text-body-1">Vaciados de Hormigón</div>
-                    </div>
-                    <p class="text-body-2 text-medium-emphasis mb-0">
-                        Cálculo para cimientos, zapatas, columnas, vigas, contrapisos y losas con medidas simples. Incluye proporciones prácticas
-                        1:2:3 (estructural) y 1:2:4 (pisos) en baldes de 20L, carretillas y bolsas de cemento.
-                    </p>
-                </v-card>
-            </v-col>
-
-            <!-- Feature 4: Pisos y Revestimientos -->
-            <v-col cols="12" sm="6">
-                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
-                    <div class="d-flex align-center mb-2">
-                        <v-avatar color="teal" variant="tonal" size="36" class="mr-3">
-                            <v-icon :icon="mdiGrid" color="teal" size="20" />
-                        </v-avatar>
-                        <div class="font-weight-bold text-body-1">Pisos y Cerámicas</div>
-                    </div>
-                    <p class="text-body-2 text-medium-emphasis mb-0">
-                        Cálculo de superficie de colocación, número exacto de cajas a comprar según el formato y m² por caja, porcentaje de merma por
-                        recortes, bolsas de cemento cola y kilos de pastina para juntas.
-                    </p>
-                </v-card>
-            </v-col>
-
-            <!-- Feature 5: Guías y Recetario -->
-            <v-col cols="12" sm="6">
-                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
-                    <div class="d-flex align-center mb-2">
-                        <v-avatar color="success" variant="tonal" size="36" class="mr-3">
-                            <v-icon :icon="mdiBookOpenPageVariant" color="success" size="20" />
-                        </v-avatar>
-                        <div class="font-weight-bold text-body-1">Guías & Manual del Albañil</div>
-                    </div>
-                    <p class="text-body-2 text-medium-emphasis mb-0">
-                        Calculadora rápida interactiva por bolsa de cemento (conversión directa a baldes y carretillas), tablas de dosificación y
-                        recomendaciones constructivas para la zona de Comarapa.
-                    </p>
-                </v-card>
-            </v-col>
-
-            <!-- Feature 6: Off-Line -->
-            <v-col cols="12" sm="6">
-                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
-                    <div class="d-flex align-center mb-2">
-                        <v-avatar color="info" variant="tonal" size="36" class="mr-3">
-                            <v-icon :icon="mdiWifiOff" color="info" size="20" />
-                        </v-avatar>
-                        <div class="font-weight-bold text-body-1">100% Off-Line (Sin Internet)</div>
-                    </div>
-                    <p class="text-body-2 text-medium-emphasis mb-0">
-                        Funciona de forma autónoma sin depender de conexión a internet ni datos móviles, lista para usarse en el lugar de la
-                        construcción o en áreas rurales.
-                    </p>
-                </v-card>
-            </v-col>
-
-            <!-- Feature 7: Presupuesto en Bs. (Comentado temporalmente) -->
-            <!-- <v-col cols="12" sm="6">
-                <v-card class="pa-4 rounded-xl border-0 elevation-2 h-100">
-                    <div class="d-flex align-center mb-2">
-                        <v-avatar color="success" variant="tonal" size="36" class="mr-3">
-                            <v-icon :icon="mdiCashMultiple" color="success" size="20" />
-                        </v-avatar>
-                        <div class="font-weight-bold text-body-1">Presupuesto en Bolivianos (BOB)</div>
-                    </div>
-                    <p class="text-body-2 text-medium-emphasis mb-0">
-                        Obtén el desglose financiero estimado de tu obra en Bolivianos (Bs.) con precios unitarios de mercado editables y opción de
-                        exportar el resumen.
-                    </p>
-                </v-card>
-            </v-col> -->
-        </v-row>
+        <p class="text-center text-caption text-medium-emphasis mt-6 mb-0">
+            © {{ currentYear }} {{ creator.name }} · Hecho en Comarapa, Bolivia
+        </p>
     </div>
 </template>
 
 <script setup lang="ts">
+    import {computed} from 'vue';
     import {
-        mdiInformation,
-        mdiHeart,
-        mdiSchool,
-        mdiMapMarker,
-        mdiHelpCircleOutline,
-        mdiHomeCity,
-        mdiWall,
-        mdiCubeOutline,
-        mdiGrid,
-        mdiBookOpenPageVariant,
+        mdiGithub,
+        mdiSourceBranch,
+        mdiTagOutline,
+        mdiCellphone,
         mdiWifiOff,
-        mdiCashMultiple,
+        mdiHomeCity,
+        mdiFileDocumentOutline,
+        mdiBookOpenPageVariantOutline,
+        mdiAccountHardHat,
     } from '@mdi/js';
+    import PageHeader from '@/components/PageHeader.vue';
+    import {isNative} from '@/services/capacitorService';
+
+    const creator = {
+        name: 'tapiaCode',
+        role: 'Software Engineer',
+        githubUrl: 'https://github.com/tapiacode',
+    };
+
+    const repoUrl = 'https://github.com/tapiacode/builder-tool';
+
+    const currentYear = new Date().getFullYear();
+
+    const infoRows = computed(() => [
+        {label: 'Versión', value: __APP_VERSION__, icon: mdiTagOutline},
+        {label: 'Plataforma', value: isNative ? 'App Android' : 'Web', icon: mdiCellphone},
+        {label: 'Funciona sin internet', value: 'Sí', icon: mdiWifiOff},
+        {label: 'Desarrollador', value: creator.name, icon: mdiAccountHardHat},
+    ]);
+
+    const features = [
+        {
+            title: 'Cálculo de materiales',
+            text: 'Cuartos, paredes, vaciados y pisos: ladrillos, cemento, arena y ripio.',
+            icon: mdiHomeCity,
+            color: 'primary',
+        },
+        {
+            title: 'Presupuestos',
+            text: 'Arma cotizaciones con tus propios precios y envíalas por WhatsApp.',
+            icon: mdiFileDocumentOutline,
+            color: 'success',
+        },
+        {
+            title: 'Guías prácticas',
+            text: 'Proporciones de mezcla en baldes y carretillas para la obra.',
+            icon: mdiBookOpenPageVariantOutline,
+            color: 'accent',
+        },
+    ];
 </script>
 
 <style scoped>
-    .border-start-primary {
-        border-left: 5px solid rgb(var(--v-theme-primary)) !important;
+    .creator-card {
+        background: rgba(var(--v-theme-primary), 0.07) !important;
+        border-color: rgba(var(--v-theme-primary), 0.22) !important;
     }
-    .line-height-relaxed {
-        line-height: 1.6;
+    .creator-avatar {
+        color: rgb(var(--v-theme-background));
+    }
+    .creator-eyebrow,
+    .section-label {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+    .section-label {
+        color: rgba(var(--v-theme-on-surface), 0.6);
+    }
+    .creator-name {
+        font-size: 1.9rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+    }
+    .creator-initials {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+    .github-btn {
+        background: rgb(var(--v-theme-on-surface)) !important;
+        color: rgb(var(--v-theme-surface)) !important;
+    }
+    .creator-btn {
+        min-width: 150px;
+    }
+    .feature-sub {
+        -webkit-line-clamp: 3 !important;
+        line-clamp: 3;
     }
 </style>
