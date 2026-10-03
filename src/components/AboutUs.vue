@@ -47,7 +47,7 @@
                     <v-card class="pa-3 rounded-lg border-0 bg-surface-variant d-flex align-center">
                         <v-avatar color="primary" size="40" class="mr-3 font-weight-bold text-white"> FT </v-avatar>
                         <div>
-                            <div class="font-weight-bold text-subtitle-2">Fiorella Tapia Berbetti</div>
+                            <div class="font-weight-bold text-subtitle-2">Fiorella Tapia Berbetty</div>
                             <div class="text-caption text-medium-emphasis">Estudiante de 6to de Secundaria</div>
                         </div>
                     </v-card>
@@ -134,8 +134,8 @@
                         <div class="font-weight-bold text-body-1">Pisos y Cerámicas</div>
                     </div>
                     <p class="text-body-2 text-medium-emphasis mb-0">
-                        Cálculo de superficie de colocación, número exacto de cajas a comprar según el formato y m² por caja, porcentaje de
-                        merma por recortes, bolsas de cemento cola y kilos de pastina para juntas.
+                        Cálculo de superficie de colocación, número exacto de cajas a comprar según el formato y m² por caja, porcentaje de merma por
+                        recortes, bolsas de cemento cola y kilos de pastina para juntas.
                     </p>
                 </v-card>
             </v-col>
@@ -150,8 +150,8 @@
                         <div class="font-weight-bold text-body-1">Guías & Manual del Albañil</div>
                     </div>
                     <p class="text-body-2 text-medium-emphasis mb-0">
-                        Calculadora rápida interactiva por bolsa de cemento (conversión directa a baldes y carretillas), tablas de dosificación
-                        y recomendaciones constructivas para la zona de Comarapa.
+                        Calculadora rápida interactiva por bolsa de cemento (conversión directa a baldes y carretillas), tablas de dosificación y
+                        recomendaciones constructivas para la zona de Comarapa.
                     </p>
                 </v-card>
             </v-col>
