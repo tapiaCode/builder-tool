@@ -1,596 +1,692 @@
 <template>
-  <v-container class="py-4">
-    <!-- Header Banner -->
-    <v-card class="mb-4 overflow-hidden rounded-xl border-0 elevation-4 stat-card-gradient-accent">
-      <v-card-text class="pa-5">
-        <div class="d-flex align-center justify-space-between">
-          <div>
-            <div class="text-overline text-accent font-weight-bold tracking-wider">COTIZADOR RÁPIDO PARA CLIENTES</div>
-            <h2 class="text-h5 font-weight-black text-on-surface mb-1">Cotizaciones & Presupuestos</h2>
-            <p class="text-body-2 text-medium-emphasis mb-0">Crea proformas rápidas, envíalas por WhatsApp y guarda tu historial</p>
-          </div>
-          <v-avatar color="accent" size="52" class="elevation-4">
-            <v-icon :icon="mdiCashMultiple" size="28" color="white" />
-          </v-avatar>
-        </div>
-      </v-card-text>
-    </v-card>
+  <div class="budget-root pb-6" :class="{ 'has-total-bar': subTab === 'newQuote' }">
+    <PageHeader eyebrow="Presupuestos" title="Cotizaciones" subtitle="Arma presupuestos con tus precios y envíalos por WhatsApp." />
 
-    <!-- Sub-Navigation Tabs -->
-    <v-card class="rounded-xl border-0 elevation-2 mb-4">
-      <v-tabs v-model="subTab" color="primary" grow align-tabs="center" class="pa-1">
-        <v-tab value="newQuote" class="rounded-lg text-none font-weight-bold">
-          <v-icon :icon="mdiFileDocumentEditOutline" class="mr-2" /> Nueva Cotización
-        </v-tab>
-        <v-tab value="history" class="rounded-lg text-none font-weight-bold">
-          <v-icon :icon="mdiHistory" class="mr-2" /> Historial ({{ savedQuotes.length }})
-        </v-tab>
-        <v-tab value="config" class="rounded-lg text-none font-weight-bold">
-          <v-icon :icon="mdiCogOutline" class="mr-2" /> Precios Base
-        </v-tab>
-      </v-tabs>
-    </v-card>
+    <!-- Segmented control -->
+    <v-btn-toggle v-model="subTab" mandatory class="segmented mb-4" color="primary">
+      <v-btn value="newQuote">Nueva</v-btn>
+      <v-btn value="history">
+        Historial
+        <v-badge v-if="savedQuotes.length" :content="savedQuotes.length" color="primary" inline class="ml-1" />
+      </v-btn>
+      <v-btn value="catalog">Mis precios</v-btn>
+    </v-btn-toggle>
 
-    <v-window v-model="subTab">
-      <!-- PESTAÑA 1: NUEVA COTIZACIÓN PARA CLIENTE -->
+    <v-window v-model="subTab" :touch="false">
+      <!-- NUEVA COTIZACIÓN -->
       <v-window-item value="newQuote">
-        <v-card class="rounded-xl border-0 elevation-2 pa-4 mb-4">
-          <div class="d-flex align-center justify-space-between mb-3">
-            <h3 class="text-subtitle-1 font-weight-bold d-flex align-center">
-              <v-icon :icon="mdiAccount" color="primary" class="mr-2" />
-              1. Datos del Cliente y Trabajo
-            </h3>
-            <v-menu location="bottom end">
+        <v-card class="pa-4 mb-3" flat>
+          <div class="section-label mb-3">Cliente y trabajo</div>
+          <v-text-field
+            v-model="quoteForm.clientName"
+            label="Nombre del cliente"
+            :prepend-inner-icon="mdiAccountOutline"
+            hide-details="auto"
+            class="mb-3"
+          />
+          <v-text-field
+            v-model="quoteForm.clientPhone"
+            label="Celular / WhatsApp (opcional)"
+            type="tel"
+            inputmode="tel"
+            :prepend-inner-icon="mdiPhoneOutline"
+            prefix="+591"
+            hide-details="auto"
+            class="mb-3"
+          />
+          <v-text-field
+            v-model="quoteForm.projectTitle"
+            label="Trabajo a realizar"
+            :prepend-inner-icon="mdiHammerWrench"
+            hide-details="auto"
+            class="mb-3"
+          />
+          <v-textarea
+            v-model="quoteForm.notes"
+            label="Notas (opcional)"
+            rows="2"
+            auto-grow
+            hide-details="auto"
+          />
+        </v-card>
+
+        <div class="d-flex align-center justify-space-between mb-2 px-1">
+          <div class="section-label">Ítems ({{ quoteForm.items.length }})</div>
+          <v-btn
+            v-if="quoteForm.items.length || hasFormContent"
+            size="small"
+            variant="text"
+            color="error"
+            @click="confirmAction('clearForm')"
+          >
+            Limpiar
+          </v-btn>
+        </div>
+
+        <!-- Empty state -->
+        <v-card v-if="quoteForm.items.length === 0" class="pa-6 mb-3 text-center" flat>
+          <v-avatar color="primary" variant="tonal" size="56" rounded="lg" class="mb-3">
+            <v-icon :icon="mdiFileDocumentPlusOutline" size="28" />
+          </v-avatar>
+          <div class="text-subtitle-1 font-weight-bold mb-1">Aún no hay ítems</div>
+          <p class="text-body-2 text-medium-emphasis mb-4">
+            Agrega materiales o mano de obra. Puedes usar los precios que guardaste en «Mis precios».
+          </p>
+        </v-card>
+
+        <!-- Item cards -->
+        <v-card v-for="(item, index) in quoteForm.items" :key="item.id" class="pa-3 mb-3" flat>
+          <div class="d-flex align-start ga-2">
+            <v-text-field
+              v-model="item.description"
+              label="Descripción"
+              density="comfortable"
+              hide-details
+              class="flex-grow-1"
+            />
+            <v-btn
+              icon
+              variant="text"
+              color="error"
+              size="48"
+              :aria-label="`Quitar ítem ${index + 1}`"
+              @click="removeItem(index)"
+            >
+              <v-icon :icon="mdiDeleteOutline" />
+            </v-btn>
+          </div>
+          <div class="d-flex ga-2 mt-2">
+            <v-text-field
+              v-model.number="item.quantity"
+              label="Cantidad"
+              type="number"
+              inputmode="decimal"
+              min="0"
+              density="comfortable"
+              :suffix="item.unit || undefined"
+              hide-details
+              class="qty-field"
+            />
+            <v-text-field
+              v-model.number="item.unitPrice"
+              label="Precio unitario"
+              type="number"
+              inputmode="decimal"
+              min="0"
+              prefix="Bs."
+              density="comfortable"
+              hide-details
+              class="flex-grow-1"
+            />
+          </div>
+          <div class="d-flex justify-end mt-2 text-body-2">
+            <span class="text-medium-emphasis mr-2">Subtotal</span>
+            <span class="font-weight-bold">Bs. {{ formatMoney(lineTotal(item)) }}</span>
+          </div>
+        </v-card>
+
+        <div class="d-flex ga-2 mb-4">
+          <v-btn color="primary" variant="flat" size="large" class="flex-grow-1" :prepend-icon="mdiPlus" @click="addItem()">
+            Agregar ítem
+          </v-btn>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            size="large"
+            class="flex-grow-1"
+            :prepend-icon="mdiTagMultipleOutline"
+            @click="catalogSheet = true"
+          >
+            Mis precios
+          </v-btn>
+        </div>
+
+        <!-- Sticky total bar -->
+        <div class="total-bar">
+          <div class="total-bar__inner">
+            <div class="min-width-0 flex-grow-1">
+              <div class="total-bar__label">Total</div>
+              <div class="total-bar__value text-truncate">Bs. {{ formatMoney(calculatedTotal) }}</div>
+            </div>
+            <v-menu location="top end">
               <template #activator="{ props }">
-                <v-btn size="x-small" color="primary" variant="tonal" v-bind="props">
-                  <v-icon :icon="mdiLightningBolt" start /> Cargar Plantilla
+                <v-btn v-bind="props" icon variant="tonal" size="48" rounded="lg" aria-label="Más acciones">
+                  <v-icon :icon="mdiDotsVertical" />
                 </v-btn>
               </template>
-              <v-list density="compact">
-                <v-list-item title="Cocina (3×3m con Mesón)" @click="loadPreset('cocina')" />
-                <v-list-item title="Baño Completo (2×2m)" @click="loadPreset('bano')" />
-                <v-list-item title="Cuarto Estándar (4×4m)" @click="loadPreset('cuarto')" />
-                <v-list-item title="Revoque de Fachada" @click="loadPreset('revoque')" />
+              <v-list density="comfortable" rounded="lg">
+                <v-list-item :prepend-icon="mdiContentSaveOutline" title="Guardar en historial" :disabled="!canSubmit" @click="saveQuote" />
+                <v-list-item :prepend-icon="mdiContentCopy" title="Copiar texto" :disabled="!canSubmit" @click="copyTextQuote" />
               </v-list>
             </v-menu>
-          </div>
-
-          <v-row density="compact">
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model="quoteForm.clientName"
-                label="Nombre del Cliente"
-                placeholder="Ej. Don Juan Pérez"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model="quoteForm.clientPhone"
-                label="Celular / WhatsApp (Opcional)"
-                placeholder="Ej. 71234567"
-                type="tel"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model="quoteForm.projectTitle"
-                label="Nombre del Proyecto / Trabajo"
-                placeholder="Ej. Construcción de Cocina 3×3m con Mesón de Hormigón"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-textarea
-                v-model="quoteForm.notes"
-                label="Detalles o Especificaciones del Cliente"
-                placeholder="Ej. Incluye mesón de hormigón, cerámica en paredes hasta 1.80m y punto de agua"
-                rows="2"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-          </v-row>
-
-          <v-divider class="my-4" />
-
-          <!-- Detalle de Ítems -->
-          <div class="d-flex align-center justify-space-between mb-3">
-            <h3 class="text-subtitle-1 font-weight-bold d-flex align-center">
-              <v-icon :icon="mdiFormatListNumbered" color="primary" class="mr-2" />
-              2. Ítems y Cobros de la Cotización
-            </h3>
-            <v-btn size="x-small" color="primary" variant="text" @click="addItem">
-              <v-icon :icon="mdiPlus" start /> Agregar Ítem
+            <v-btn
+              color="success"
+              variant="flat"
+              size="large"
+              rounded="lg"
+              :prepend-icon="mdiWhatsapp"
+              :disabled="!canSubmit"
+              class="ml-2"
+              @click="sendWhatsApp"
+            >
+              Enviar
             </v-btn>
           </div>
-
-          <v-row v-for="(item, index) in quoteForm.items" :key="index" density="compact" class="align-center mb-2">
-            <v-col cols="12" sm="5">
-              <v-text-field
-                v-model="item.description"
-                label="Descripción del trabajo / material"
-                placeholder="Ej. Mano de Obra"
-                variant="outlined"
-                density="compact"
-                hide-details
-              />
-            </v-col>
-            <v-col cols="4" sm="2">
-              <v-text-field
-                v-model.number="item.quantity"
-                label="Cant."
-                type="number"
-                min="1"
-                variant="outlined"
-                density="compact"
-                hide-details
-              />
-            </v-col>
-            <v-col cols="6" sm="4">
-              <v-text-field
-                v-model.number="item.unitPrice"
-                label="Precio (Bs.)"
-                prefix="Bs."
-                type="number"
-                variant="outlined"
-                density="compact"
-                hide-details
-              />
-            </v-col>
-            <v-col cols="2" sm="1" class="text-right">
-              <v-btn icon size="x-small" color="error" variant="text" @click="removeItem(index)">
-                <v-icon :icon="mdiDelete" />
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <!-- Total Cotización Card -->
-          <v-card class="pa-4 rounded-xl stat-card-gradient-primary border-0 mt-4 text-center">
-            <div class="text-caption font-weight-bold text-medium-emphasis">TOTAL DE LA COTIZACIÓN</div>
-            <div class="text-h3 font-weight-black text-primary my-1">
-              Bs. {{ calculatedTotal.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} BOB
-            </div>
-          </v-card>
-
-          <!-- Action Buttons -->
-          <v-row class="mt-4">
-            <v-col cols="12" sm="6">
-              <v-btn
-                color="success"
-                size="large"
-                block
-                class="rounded-lg font-weight-bold"
-                @click="sendWhatsApp"
-              >
-                <v-icon :icon="mdiWhatsapp" start size="22" /> Enviar por WhatsApp
-              </v-btn>
-            </v-col>
-            <v-col cols="6" sm="3">
-              <v-btn
-                color="primary"
-                size="large"
-                block
-                variant="tonal"
-                class="rounded-lg font-weight-bold"
-                @click="saveQuote"
-              >
-                <v-icon :icon="mdiContentSave" start /> Guardar
-              </v-btn>
-            </v-col>
-            <v-col cols="6" sm="3">
-              <v-btn
-                color="secondary"
-                size="large"
-                block
-                variant="outlined"
-                class="rounded-lg font-weight-bold"
-                @click="copyTextQuote"
-              >
-                <v-icon :icon="mdiContentCopy" start /> Copiar
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-card>
+        </div>
       </v-window-item>
 
-      <!-- PESTAÑA 2: HISTORIAL DE COTIZACIONES -->
+      <!-- HISTORIAL -->
       <v-window-item value="history">
-        <div v-if="savedQuotes.length === 0" class="text-center py-8">
-          <v-icon :icon="mdiHistory" size="64" color="medium-emphasis" class="mb-3" />
-          <h3 class="text-h6 font-weight-bold text-medium-emphasis">No tienes cotizaciones guardadas</h3>
-          <p class="text-caption text-medium-emphasis">Crea una cotización en la primera pestaña y guárdala aquí para ver tu historial.</p>
-        </div>
+        <v-card v-if="savedQuotes.length === 0" class="pa-6 text-center" flat>
+          <v-avatar color="primary" variant="tonal" size="56" rounded="lg" class="mb-3">
+            <v-icon :icon="mdiHistory" size="28" />
+          </v-avatar>
+          <div class="text-subtitle-1 font-weight-bold mb-1">Sin cotizaciones guardadas</div>
+          <p class="text-body-2 text-medium-emphasis mb-4">Las cotizaciones que guardes aparecerán aquí.</p>
+          <v-btn color="primary" variant="tonal" @click="subTab = 'newQuote'">Crear cotización</v-btn>
+        </v-card>
 
-        <div v-else>
-          <div class="d-flex align-center justify-space-between mb-3 px-1">
-            <span class="text-caption font-weight-bold text-medium-emphasis">COTIZACIONES REGISTRADAS</span>
-            <v-btn size="x-small" color="error" variant="text" @click="clearHistory">
-              <v-icon :icon="mdiDelete" start /> Borrar Historial
-            </v-btn>
+        <template v-else>
+          <div class="d-flex align-center justify-space-between mb-2 px-1">
+            <div class="section-label">{{ savedQuotes.length }} guardadas</div>
+            <v-btn size="small" color="error" variant="text" @click="confirmAction('clearHistory')">Borrar todo</v-btn>
           </div>
 
-          <v-card
-            v-for="quote in savedQuotes"
-            :key="quote.id"
-            class="rounded-xl border-0 elevation-2 pa-4 mb-3"
-          >
-            <div class="d-flex align-center justify-space-between mb-2">
-              <div>
-                <span class="text-subtitle-1 font-weight-black text-primary">{{ quote.clientName || 'Cliente sin nombre' }}</span>
-                <span v-if="quote.clientPhone" class="text-caption text-medium-emphasis ml-2">({{ quote.clientPhone }})</span>
+          <v-card v-for="quote in savedQuotes" :key="quote.id" class="pa-4 mb-3" flat>
+            <div class="d-flex align-start justify-space-between ga-3">
+              <div class="min-width-0">
+                <div class="text-subtitle-1 font-weight-bold text-truncate">{{ quote.projectTitle || 'Sin título' }}</div>
+                <div class="text-body-2 text-medium-emphasis text-truncate">
+                  {{ quote.clientName || 'Sin cliente' }}<span v-if="quote.clientPhone"> · {{ quote.clientPhone }}</span>
+                </div>
               </div>
-              <v-chip size="x-small" color="primary" variant="flat" class="font-weight-bold">
-                Bs. {{ quote.total.toLocaleString('es-BO', { minimumFractionDigits: 2 }) }}
-              </v-chip>
+              <div class="text-subtitle-1 font-weight-black text-primary text-no-wrap">Bs. {{ formatMoney(quote.total) }}</div>
             </div>
 
-            <div class="text-body-2 font-weight-bold mb-1">{{ quote.projectTitle }}</div>
-            <div v-if="quote.notes" class="text-caption text-medium-emphasis mb-2">{{ quote.notes }}</div>
-
-            <div class="d-flex align-center justify-space-between border-t pt-3 mt-2">
-              <span class="text-caption text-medium-emphasis">
-                <v-icon :icon="mdiClockOutline" size="14" start /> {{ quote.date }}
+            <div class="d-flex align-center justify-space-between mt-3 pt-3 history-footer">
+              <span class="text-caption text-medium-emphasis d-flex align-center">
+                <v-icon :icon="mdiClockOutline" size="14" class="mr-1" /> {{ formatDate(quote.createdAt) }}
               </span>
-
-              <div>
-                <v-btn icon size="x-small" color="success" class="mr-1" @click="sendSavedWhatsApp(quote)" title="Enviar por WhatsApp">
+              <div class="d-flex ga-1">
+                <v-btn icon variant="text" color="success" size="44" aria-label="Enviar por WhatsApp" @click="openWhatsApp(quote, quote.total)">
                   <v-icon :icon="mdiWhatsapp" />
                 </v-btn>
-                <v-btn icon size="x-small" color="primary" variant="tonal" class="mr-1" @click="loadQuoteIntoForm(quote)" title="Ver / Editar">
-                  <v-icon :icon="mdiFileDocumentEditOutline" />
+                <v-btn icon variant="text" color="primary" size="44" aria-label="Abrir y editar" @click="loadQuoteIntoForm(quote)">
+                  <v-icon :icon="mdiPencilOutline" />
                 </v-btn>
-                <v-btn icon size="x-small" color="error" variant="text" @click="deleteQuote(quote.id)" title="Eliminar">
-                  <v-icon :icon="mdiDelete" />
+                <v-btn icon variant="text" color="error" size="44" aria-label="Eliminar" @click="deleteQuote(quote.id)">
+                  <v-icon :icon="mdiDeleteOutline" />
                 </v-btn>
               </div>
             </div>
           </v-card>
-        </div>
+        </template>
       </v-window-item>
 
-      <!-- PESTAÑA 3: PRECIOS BASE DE REFERENCIA -->
-      <v-window-item value="config">
-        <v-card class="rounded-xl border-0 elevation-2 pa-4 mb-4">
-          <div class="d-flex align-center justify-space-between mb-4">
-            <h3 class="text-subtitle-1 font-weight-bold d-flex align-center">
-              <v-icon :icon="mdiCogOutline" color="primary" class="mr-2" />
-              Precios Unitarios de Referencia (Comarapa)
-            </h3>
-            <v-btn size="x-small" color="primary" variant="text" @click="resetDefaults">
-              <v-icon :icon="mdiRefresh" start /> Restablecer
-            </v-btn>
-          </div>
+      <!-- MIS PRECIOS -->
+      <v-window-item value="catalog">
+        <p class="text-body-2 text-medium-emphasis px-1 mb-3">
+          Guarda los precios que pagas en tu zona. Se usan para agregar ítems rápido a tus cotizaciones.
+        </p>
 
-          <v-row density="compact">
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model.number="prices.cement"
-                label="Bolsa Cemento IP-30/40 (50kg)"
-                prefix="Bs."
-                type="number"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model.number="prices.sand"
-                label="Arena Corriente / Fina (por m³)"
-                prefix="Bs."
-                type="number"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model.number="prices.gravel"
-                label="Ripio (por m³)"
-                prefix="Bs."
-                type="number"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model.number="prices.brick"
-                label="Ladrillo Gambote 6H (Mil un.)"
-                prefix="Bs."
-                type="number"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model.number="prices.labor"
-                label="Mano de Obra Estimada (Base)"
-                prefix="Bs."
-                type="number"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                class="mb-3"
-              />
-            </v-col>
-          </v-row>
+        <v-card v-if="catalog.length === 0" class="pa-6 mb-3 text-center" flat>
+          <v-avatar color="primary" variant="tonal" size="56" rounded="lg" class="mb-3">
+            <v-icon :icon="mdiTagMultipleOutline" size="28" />
+          </v-avatar>
+          <div class="text-subtitle-1 font-weight-bold mb-1">Tu lista de precios está vacía</div>
+          <p class="text-body-2 text-medium-emphasis mb-0">Agrega materiales o servicios con su precio.</p>
         </v-card>
+
+        <v-card v-else class="mb-3" flat>
+          <v-list bg-color="transparent" class="py-1">
+            <v-list-item v-for="entry in catalog" :key="entry.id" min-height="60" @click="openCatalogDialog(entry)">
+              <v-list-item-title class="font-weight-bold">{{ entry.name }}</v-list-item-title>
+              <v-list-item-subtitle>por {{ entry.unit || 'unidad' }}</v-list-item-subtitle>
+              <template #append>
+                <span class="font-weight-bold text-primary mr-1">Bs. {{ formatMoney(entry.price) }}</span>
+                <v-icon :icon="mdiChevronRight" class="text-medium-emphasis" />
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-card>
+
+        <v-btn color="primary" variant="flat" size="large" block :prepend-icon="mdiPlus" @click="openCatalogDialog()">
+          Agregar precio
+        </v-btn>
       </v-window-item>
     </v-window>
 
-    <!-- Toast Notification -->
-    <v-snackbar v-model="snackbar" :timeout="3000" color="success" rounded="pill" location="bottom center">
-      <v-icon :icon="mdiCheckCircle" start /> {{ snackbarText }}
+    <!-- Bottom sheet: pick from catalog -->
+    <v-bottom-sheet v-model="catalogSheet" inset>
+      <v-card class="pa-4 sheet-card">
+        <div class="d-flex align-center justify-space-between mb-2">
+          <div class="text-subtitle-1 font-weight-bold">Agregar desde mis precios</div>
+          <v-btn icon variant="text" size="44" aria-label="Cerrar" @click="catalogSheet = false">
+            <v-icon :icon="mdiClose" />
+          </v-btn>
+        </div>
+        <div v-if="catalog.length === 0" class="text-center py-6">
+          <p class="text-body-2 text-medium-emphasis mb-4">Todavía no guardaste precios.</p>
+          <v-btn color="primary" variant="tonal" @click="goToCatalog">Ir a Mis precios</v-btn>
+        </div>
+        <v-list v-else bg-color="transparent" class="sheet-list">
+          <v-list-item v-for="entry in catalog" :key="entry.id" min-height="56" @click="addFromCatalog(entry)">
+            <v-list-item-title class="font-weight-bold">{{ entry.name }}</v-list-item-title>
+            <v-list-item-subtitle>por {{ entry.unit || 'unidad' }}</v-list-item-subtitle>
+            <template #append>
+              <span class="font-weight-bold mr-2">Bs. {{ formatMoney(entry.price) }}</span>
+              <v-icon :icon="mdiPlusCircleOutline" color="primary" />
+            </template>
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </v-bottom-sheet>
+
+    <!-- Dialog: create / edit catalog entry -->
+    <v-dialog v-model="catalogDialog" max-width="440">
+      <v-card class="pa-5">
+        <div class="text-h6 font-weight-bold mb-4">{{ catalogDraft.id ? 'Editar precio' : 'Nuevo precio' }}</div>
+        <v-text-field v-model="catalogDraft.name" label="Material o servicio" autofocus hide-details="auto" class="mb-3" />
+        <v-text-field v-model="catalogDraft.unit" label="Unidad (bolsa, m³, día…)" hide-details="auto" class="mb-3" />
+        <v-text-field
+          v-model.number="catalogDraft.price"
+          label="Precio"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          prefix="Bs."
+          hide-details="auto"
+          class="mb-5"
+        />
+        <div class="d-flex ga-2">
+          <v-btn v-if="catalogDraft.id" color="error" variant="text" @click="deleteCatalogEntry(catalogDraft.id)">Eliminar</v-btn>
+          <v-spacer />
+          <v-btn variant="text" @click="catalogDialog = false">Cancelar</v-btn>
+          <v-btn color="primary" variant="flat" :disabled="!catalogDraft.name.trim()" @click="saveCatalogEntry">Guardar</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+
+    <!-- Confirm dialog -->
+    <v-dialog v-model="confirmDialog.open" max-width="400">
+      <v-card class="pa-5">
+        <div class="text-h6 font-weight-bold mb-2">{{ confirmDialog.title }}</div>
+        <p class="text-body-2 text-medium-emphasis mb-5">{{ confirmDialog.text }}</p>
+        <div class="d-flex justify-end ga-2">
+          <v-btn variant="text" @click="confirmDialog.open = false">Cancelar</v-btn>
+          <v-btn color="error" variant="flat" @click="runConfirmed">Borrar</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+
+    <v-snackbar v-model="snackbar" :timeout="2500" :color="snackbarColor" location="top">
+      {{ snackbarText }}
     </v-snackbar>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from 'vue'
-import { 
-  mdiCashMultiple, 
-  mdiRefresh, 
-  mdiCheckCircle,
-  mdiFileDocumentEditOutline,
-  mdiHistory,
-  mdiCogOutline,
-  mdiAccount,
+import {
+  mdiAccountOutline,
+  mdiPhoneOutline,
+  mdiHammerWrench,
   mdiPlus,
-  mdiDelete,
+  mdiPlusCircleOutline,
+  mdiDeleteOutline,
   mdiWhatsapp,
   mdiContentCopy,
-  mdiContentSave,
+  mdiContentSaveOutline,
   mdiClockOutline,
-  mdiLightningBolt,
-  mdiFormatListNumbered
+  mdiHistory,
+  mdiPencilOutline,
+  mdiTagMultipleOutline,
+  mdiFileDocumentPlusOutline,
+  mdiDotsVertical,
+  mdiChevronRight,
+  mdiClose
 } from '@mdi/js'
+import PageHeader from '@/components/PageHeader.vue'
+import { triggerHaptic } from '@/services/capacitorService'
 
-const subTab = ref('newQuote')
-const snackbar = ref(false)
-const snackbarText = ref('')
-
-// Formulario de Cotización Rápida
-const quoteForm = reactive({
-  clientName: '',
-  clientPhone: '',
-  projectTitle: 'Construcción de Cocina (3×3m)',
-  notes: 'Incluye mesón de hormigón, azulejos en pared y punto de agua.',
-  items: [
-    { description: 'Materiales Pesados (Cemento, Arena, Ripio)', quantity: 1, unitPrice: 3500 },
-    { description: 'Mano de Obra Maestro y Ayudante', quantity: 1, unitPrice: 2800 },
-    { description: 'Cerámica y Mesón de Hormigón', quantity: 1, unitPrice: 1200 }
-  ]
-})
-
-const calculatedTotal = computed(() => {
-  return quoteForm.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
-})
-
-const addItem = () => {
-  quoteForm.items.push({ description: '', quantity: 1, unitPrice: 0 })
-}
-
-const removeItem = (index: number) => {
-  if (quoteForm.items.length > 1) {
-    quoteForm.items.splice(index, 1)
-  }
-}
-
-// Plantillas Rápidas
-const loadPreset = (type: string) => {
-  if (type === 'cocina') {
-    quoteForm.projectTitle = 'Construcción de Cocina (3×3m con Mesón)'
-    quoteForm.notes = 'Incluye mesón de hormigón reforzado, cerámica en pared hasta 1.80m y punto de agua.'
-    quoteForm.items = [
-      { description: 'Materiales (Cemento, Arena, Ripio, Ladrillo)', quantity: 1, unitPrice: 3800 },
-      { description: 'Mano de Obra de Construcción', quantity: 1, unitPrice: 3000 },
-      { description: 'Acabados de Mesón y Cerámica', quantity: 1, unitPrice: 1400 }
-    ]
-  } else if (type === 'bano') {
-    quoteForm.projectTitle = 'Construcción / Remodelación de Baño (2×2m)'
-    quoteForm.notes = 'Incluye revestimiento completo con cerámica, instalación sanitaria y grifería.'
-    quoteForm.items = [
-      { description: 'Materiales (Cemento, Arena, Ladrillo)', quantity: 1, unitPrice: 2200 },
-      { description: 'Cerámica, Cemento Cola y Pastina', quantity: 1, unitPrice: 1500 },
-      { description: 'Mano de Obra Sanitaria y Albañilería', quantity: 1, unitPrice: 2500 }
-    ]
-  } else if (type === 'cuarto') {
-    quoteForm.projectTitle = 'Construcción de Cuarto Completo (4×4m)'
-    quoteForm.notes = 'Paredes con Ladrillo 6 Huecos, contrapiso y colocación de piso cerámico.'
-    quoteForm.items = [
-      { description: 'Ladrillos 6 Huecos (~1,060 un.)', quantity: 1, unitPrice: 3200 },
-      { description: 'Cemento, Arena y Ripio', quantity: 1, unitPrice: 2800 },
-      { description: 'Mano de Obra Global de Obra', quantity: 1, unitPrice: 4500 }
-    ]
-  } else if (type === 'revoque') {
-    quoteForm.projectTitle = 'Revoque de Fachada / Muros'
-    quoteForm.notes = 'Revoque exterior con cal/cemento impermeabilizado.'
-    quoteForm.items = [
-      { description: 'Cemento y Cal de Revoque', quantity: 1, unitPrice: 1200 },
-      { description: 'Arena Fina de Río', quantity: 1, unitPrice: 800 },
-      { description: 'Mano de Obra por m²', quantity: 1, unitPrice: 2000 }
-    ]
-  }
-}
-
-// WhatsApp Generator
-const formatWhatsAppMessage = (form: typeof quoteForm, total: number) => {
-  let msg = `🚧 *COTIZACIÓN DE OBRA - OBRAFÁCIL COMARAPA* 🚧\n\n`
-  if (form.clientName) msg += `👤 *Cliente:* ${form.clientName}\n`
-  msg += `📌 *Proyecto:* ${form.projectTitle}\n\n`
-  msg += `📋 *DETALLE DE COTIZACIÓN:*\n`
-
-  form.items.forEach((item, index) => {
-    if (item.description) {
-      msg += `${index + 1}. ${item.description}: ${item.quantity} x Bs. ${item.unitPrice.toLocaleString('es-BO')} = *Bs. ${(item.quantity * item.unitPrice).toLocaleString('es-BO')}*\n`
-    }
-  })
-
-  msg += `\n----------------------------------\n`
-  msg += `💰 *TOTAL COTIZADO:* Bs. ${total.toLocaleString('es-BO', { minimumFractionDigits: 2 })} BOB\n`
-  msg += `----------------------------------\n`
-
-  if (form.notes) {
-    msg += `\n📝 *Notas:* ${form.notes}\n`
-  }
-
-  msg += `\n_Cotización generada para Comarapa por Maestro de Obra con Obrafácil Comarapa_`
-  return msg
-}
-
-const sendWhatsApp = () => {
-  const text = formatWhatsAppMessage(quoteForm, calculatedTotal.value)
-  const phone = quoteForm.clientPhone.replace(/\D/g, '')
-  const encoded = encodeURIComponent(text)
-
-  let url = `https://api.whatsapp.com/send?text=${encoded}`
-  if (phone) {
-    url = `https://api.whatsapp.com/send?phone=591${phone}&text=${encoded}`
-  }
-
-  window.open(url, '_blank')
-}
-
-const copyTextQuote = async () => {
-  const text = formatWhatsAppMessage(quoteForm, calculatedTotal.value)
-  try {
-    await navigator.clipboard.writeText(text)
-    snackbarText.value = '¡Cotización copiada para enviar!'
-    snackbar.value = true
-  } catch (e) {
-    snackbarText.value = 'Error al copiar'
-    snackbar.value = true
-  }
-}
-
-// Historial en localStorage
-interface SavedQuote {
+interface QuoteItem {
   id: string
-  date: string
+  description: string
+  unit: string
+  quantity: number | null
+  unitPrice: number | null
+}
+
+interface QuoteForm {
   clientName: string
   clientPhone: string
   projectTitle: string
   notes: string
-  items: { description: string; quantity: number; unitPrice: number }[]
+  items: QuoteItem[]
+}
+
+interface SavedQuote extends QuoteForm {
+  id: string
+  createdAt: string
   total: number
 }
 
+interface CatalogEntry {
+  id: string
+  name: string
+  unit: string
+  price: number
+}
+
+const STORAGE = {
+  quotes: 'obrafacil_quotes_v2',
+  draft: 'obrafacil_quote_draft',
+  catalog: 'obrafacil_price_catalog'
+}
+
+const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
+
+const readStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const raw = localStorage.getItem(key)
+    return raw ? (JSON.parse(raw) as T) : fallback
+  } catch {
+    return fallback
+  }
+}
+
+const writeStorage = (key: string, value: unknown) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // Storage may be full or unavailable
+  }
+}
+
+const emptyForm = (): QuoteForm => ({
+  clientName: '',
+  clientPhone: '',
+  projectTitle: '',
+  notes: '',
+  items: []
+})
+
+const subTab = ref('newQuote')
+const quoteForm = reactive<QuoteForm>(emptyForm())
 const savedQuotes = ref<SavedQuote[]>([])
+const catalog = ref<CatalogEntry[]>([])
 
-const saveQuote = () => {
-  const newQuote: SavedQuote = {
-    id: Date.now().toString(),
-    date: new Date().toLocaleDateString('es-BO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-    clientName: quoteForm.clientName || 'Cliente',
-    clientPhone: quoteForm.clientPhone,
-    projectTitle: quoteForm.projectTitle || 'Trabajo de Construcción',
-    notes: quoteForm.notes,
-    items: JSON.parse(JSON.stringify(quoteForm.items)),
-    total: calculatedTotal.value
-  }
-
-  savedQuotes.value.unshift(newQuote)
-  localStorage.setItem('obrafacil_quotes', JSON.stringify(savedQuotes.value))
-  
-  snackbarText.value = '¡Cotización guardada en el Historial!'
-  snackbar.value = true
+// ---------- Formatting ----------
+const moneyFormatter = new Intl.NumberFormat('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const formatMoney = (value: number) => moneyFormatter.format(Number.isFinite(value) ? value : 0)
+const formatDate = (iso: string) => {
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime())
+    ? ''
+    : d.toLocaleString('es-BO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
-const loadSavedQuotes = () => {
-  const saved = localStorage.getItem('obrafacil_quotes')
-  if (saved) {
-    try {
-      savedQuotes.value = JSON.parse(saved)
-    } catch (e) {}
-  }
+// ---------- Quote form ----------
+const lineTotal = (item: QuoteItem) => (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0)
+const calculatedTotal = computed(() => quoteForm.items.reduce((sum, item) => sum + lineTotal(item), 0))
+const hasFormContent = computed(() => Boolean(quoteForm.clientName || quoteForm.clientPhone || quoteForm.projectTitle || quoteForm.notes))
+const canSubmit = computed(() => quoteForm.items.some(i => i.description.trim() && lineTotal(i) > 0))
+
+const addItem = (partial: Partial<QuoteItem> = {}) => {
+  quoteForm.items.push({ id: uid(), description: '', unit: '', quantity: 1, unitPrice: null, ...partial })
+  triggerHaptic()
 }
 
-const sendSavedWhatsApp = (quote: SavedQuote) => {
-  const text = formatWhatsAppMessage(quote, quote.total)
-  const phone = quote.clientPhone.replace(/\D/g, '')
-  const encoded = encodeURIComponent(text)
+const removeItem = (index: number) => {
+  quoteForm.items.splice(index, 1)
+}
 
-  let url = `https://api.whatsapp.com/send?text=${encoded}`
-  if (phone) {
-    url = `https://api.whatsapp.com/send?phone=591${phone}&text=${encoded}`
-  }
+const resetForm = () => {
+  Object.assign(quoteForm, emptyForm())
+}
+
+watch(quoteForm, (val) => writeStorage(STORAGE.draft, val), { deep: true })
+
+// ---------- Messaging ----------
+const buildMessage = (form: QuoteForm, total: number) => {
+  const lines: string[] = ['*COTIZACIÓN DE OBRA*', '']
+  if (form.clientName) lines.push(`*Cliente:* ${form.clientName}`)
+  if (form.projectTitle) lines.push(`*Trabajo:* ${form.projectTitle}`)
+  lines.push('', '*Detalle:*')
+  form.items
+    .filter(i => i.description.trim())
+    .forEach((item, index) => {
+      const unit = item.unit ? ` ${item.unit}` : ''
+      lines.push(`${index + 1}. ${item.description}: ${item.quantity ?? 0}${unit} × Bs. ${formatMoney(Number(item.unitPrice) || 0)} = *Bs. ${formatMoney(lineTotal(item))}*`)
+    })
+  lines.push('', `*TOTAL: Bs. ${formatMoney(total)}*`)
+  if (form.notes) lines.push('', `*Notas:* ${form.notes}`)
+  lines.push('', '_Generado con ObraFácil_')
+  return lines.join('\n')
+}
+
+const openWhatsApp = (form: QuoteForm, total: number) => {
+  const encoded = encodeURIComponent(buildMessage(form, total))
+  const phone = form.clientPhone.replace(/\D/g, '')
+  const url = phone
+    ? `https://api.whatsapp.com/send?phone=591${phone}&text=${encoded}`
+    : `https://api.whatsapp.com/send?text=${encoded}`
   window.open(url, '_blank')
 }
 
+const sendWhatsApp = () => openWhatsApp(quoteForm, calculatedTotal.value)
+
+const copyTextQuote = async () => {
+  try {
+    await navigator.clipboard.writeText(buildMessage(quoteForm, calculatedTotal.value))
+    notify('Cotización copiada')
+  } catch {
+    notify('No se pudo copiar', 'error')
+  }
+}
+
+// ---------- History ----------
+const persistQuotes = () => writeStorage(STORAGE.quotes, savedQuotes.value)
+
+const saveQuote = () => {
+  const quote: SavedQuote = {
+    ...JSON.parse(JSON.stringify(quoteForm)),
+    id: uid(),
+    createdAt: new Date().toISOString(),
+    total: calculatedTotal.value
+  }
+  savedQuotes.value.unshift(quote)
+  persistQuotes()
+  notify('Guardada en el historial')
+}
+
 const loadQuoteIntoForm = (quote: SavedQuote) => {
-  quoteForm.clientName = quote.clientName
-  quoteForm.clientPhone = quote.clientPhone
-  quoteForm.projectTitle = quote.projectTitle
-  quoteForm.notes = quote.notes
-  quoteForm.items = JSON.parse(JSON.stringify(quote.items))
+  Object.assign(quoteForm, {
+    clientName: quote.clientName,
+    clientPhone: quote.clientPhone,
+    projectTitle: quote.projectTitle,
+    notes: quote.notes,
+    items: JSON.parse(JSON.stringify(quote.items))
+  })
   subTab.value = 'newQuote'
 }
 
 const deleteQuote = (id: string) => {
   savedQuotes.value = savedQuotes.value.filter(q => q.id !== id)
-  localStorage.setItem('obrafacil_quotes', JSON.stringify(savedQuotes.value))
+  persistQuotes()
 }
 
-const clearHistory = () => {
-  if (confirm('¿Deseas borrar todo el historial de cotizaciones?')) {
-    savedQuotes.value = []
-    localStorage.removeItem('obrafacil_quotes')
+// ---------- Catalog ----------
+const catalogSheet = ref(false)
+const catalogDialog = ref(false)
+const catalogDraft = reactive<{ id: string; name: string; unit: string; price: number | null }>({ id: '', name: '', unit: '', price: null })
+
+const persistCatalog = () => writeStorage(STORAGE.catalog, catalog.value)
+
+const openCatalogDialog = (entry?: CatalogEntry) => {
+  Object.assign(catalogDraft, entry ? { ...entry } : { id: '', name: '', unit: '', price: null })
+  catalogDialog.value = true
+}
+
+const saveCatalogEntry = () => {
+  const entry: CatalogEntry = {
+    id: catalogDraft.id || uid(),
+    name: catalogDraft.name.trim(),
+    unit: catalogDraft.unit.trim(),
+    price: Number(catalogDraft.price) || 0
   }
+  const index = catalog.value.findIndex(e => e.id === entry.id)
+  if (index >= 0) catalog.value.splice(index, 1, entry)
+  else catalog.value.push(entry)
+  catalog.value.sort((a, b) => a.name.localeCompare(b.name, 'es'))
+  persistCatalog()
+  catalogDialog.value = false
 }
 
-// Precios de referencia base en Bolivia (BOB)
-const defaultPrices = {
-  cement: 55.00,
-  sand: 120.00,
-  gravel: 130.00,
-  brick: 1750.00,
-  labor: 3500.00
+const deleteCatalogEntry = (id: string) => {
+  catalog.value = catalog.value.filter(e => e.id !== id)
+  persistCatalog()
+  catalogDialog.value = false
 }
 
-const prices = reactive({ ...defaultPrices })
-
-const resetDefaults = () => {
-  Object.assign(prices, defaultPrices)
+const addFromCatalog = (entry: CatalogEntry) => {
+  addItem({ description: entry.name, unit: entry.unit, unitPrice: entry.price })
+  catalogSheet.value = false
+  notify(`${entry.name} agregado`)
 }
 
-watch(prices, (newPrices) => {
-  localStorage.setItem('obrakit_prices', JSON.stringify(newPrices))
-}, { deep: true })
+const goToCatalog = () => {
+  catalogSheet.value = false
+  subTab.value = 'catalog'
+}
+
+// ---------- Confirm & feedback ----------
+type ConfirmKind = 'clearForm' | 'clearHistory'
+const confirmDialog = reactive<{ open: boolean; kind: ConfirmKind | null; title: string; text: string }>({
+  open: false,
+  kind: null,
+  title: '',
+  text: ''
+})
+
+const confirmAction = (kind: ConfirmKind) => {
+  Object.assign(confirmDialog, kind === 'clearForm'
+    ? { kind, title: '¿Limpiar la cotización?', text: 'Se borrarán los datos del cliente y todos los ítems.' }
+    : { kind, title: '¿Borrar el historial?', text: 'Se eliminarán todas las cotizaciones guardadas.' })
+  confirmDialog.open = true
+}
+
+const runConfirmed = () => {
+  if (confirmDialog.kind === 'clearForm') resetForm()
+  if (confirmDialog.kind === 'clearHistory') {
+    savedQuotes.value = []
+    persistQuotes()
+  }
+  confirmDialog.open = false
+}
+
+const snackbar = ref(false)
+const snackbarText = ref('')
+const snackbarColor = ref('success')
+const notify = (text: string, color = 'success') => {
+  snackbarText.value = text
+  snackbarColor.value = color
+  snackbar.value = true
+}
 
 onMounted(() => {
-  loadSavedQuotes()
-  const saved = localStorage.getItem('obrakit_prices')
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved)
-      if (parsed.cement && parsed.cement < 20) {
-        Object.assign(prices, defaultPrices)
-      } else {
-        Object.assign(prices, parsed)
-      }
-    } catch (e) {}
-  }
+  savedQuotes.value = readStorage<SavedQuote[]>(STORAGE.quotes, [])
+  catalog.value = readStorage<CatalogEntry[]>(STORAGE.catalog, [])
+  const draft = readStorage<QuoteForm | null>(STORAGE.draft, null)
+  if (draft && Array.isArray(draft.items)) Object.assign(quoteForm, draft)
 })
 </script>
+
+<style scoped>
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+}
+
+.segmented {
+  width: 100%;
+  height: 48px !important;
+  padding: 4px;
+  border-radius: 16px !important;
+  background: rgb(var(--v-theme-surface));
+  border: 1px solid var(--card-border);
+}
+
+.segmented :deep(.v-btn) {
+  flex: 1 1 0;
+  height: 40px !important;
+  border-radius: 12px !important;
+  border: 0 !important;
+}
+
+.qty-field {
+  flex: 0 0 38%;
+}
+
+.history-footer {
+  border-top: 1px solid var(--card-border);
+}
+
+.has-total-bar {
+  padding-bottom: 96px !important;
+}
+
+.total-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--dock-h) + var(--dock-gap) * 2 + env(safe-area-inset-bottom, 0px));
+  z-index: 1005;
+  padding: 0 var(--dock-gap);
+  pointer-events: none;
+}
+
+.total-bar__inner {
+  pointer-events: auto;
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 10px 10px 10px 18px;
+  border-radius: 20px;
+  background: rgb(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-theme-primary), 0.35);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35);
+}
+
+.total-bar__label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--v-theme-primary));
+}
+
+.total-bar__value {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.sheet-card {
+  border-radius: 24px 24px 0 0 !important;
+}
+
+.sheet-list {
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.min-width-0 {
+  min-width: 0;
+}
+</style>

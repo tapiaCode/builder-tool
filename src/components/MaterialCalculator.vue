@@ -1,40 +1,15 @@
 <template>
     <div class="calculator-root pb-6">
-        <!-- Header Banner -->
-        <v-card class="mb-3 overflow-hidden rounded-xl border-0 elevation-4 stat-card-gradient-primary">
-            <v-card-text class="pa-4 pa-sm-5">
-                <div class="d-flex align-center justify-space-between">
-                    <div>
-                        <div class="text-overline text-primary font-weight-bold tracking-wider">CÁLCULO FÁCIL Y PRÁCTICO</div>
-                        <h2 class="text-h5 font-weight-black text-on-surface mb-1">Calculadora de Materiales</h2>
-                        <p class="text-body-2 text-medium-emphasis mb-0">
-                            Ladrillos locales con foto, bolsas de cemento, ripio y piezas en medidas simples
-                        </p>
-                    </div>
-                    <v-avatar color="primary" size="52" class="elevation-4 pulse-badge flex-shrink-0 ml-2">
-                        <v-icon :icon="mdiHomeCity" size="28" color="white" />
-                    </v-avatar>
-                </div>
-            </v-card-text>
-        </v-card>
+        <PageHeader eyebrow="Calculadora" title="Materiales de obra" subtitle="Ladrillos, cemento, arena y ripio con medidas simples." />
 
-        <!-- Navigation Tabs -->
-        <v-card class="rounded-xl border-0 elevation-2 mb-3">
-            <v-tabs v-model="tab" color="primary" grow align-tabs="center" class="pa-1" density="comfortable">
-                <v-tab value="room" class="rounded-lg text-none font-weight-bold px-1 px-sm-3 text-caption text-sm-body-2">
-                    <v-icon :icon="mdiHomeOutline" class="mr-1" size="18" /> Cuarto<span class="d-none d-sm-inline">&nbsp;Completo</span>
-                </v-tab>
-                <v-tab value="walls" class="rounded-lg text-none font-weight-bold px-1 px-sm-3 text-caption text-sm-body-2">
-                    <v-icon :icon="mdiWall" class="mr-1" size="18" /> Paredes
-                </v-tab>
-                <v-tab value="concrete" class="rounded-lg text-none font-weight-bold px-1 px-sm-3 text-caption text-sm-body-2">
-                    <v-icon :icon="mdiCubeOutline" class="mr-1" size="18" /> Vaciado
-                </v-tab>
-                <v-tab value="tiles" class="rounded-lg text-none font-weight-bold px-1 px-sm-3 text-caption text-sm-body-2">
-                    <v-icon :icon="mdiGrid" class="mr-1" size="18" /> Pisos
-                </v-tab>
-            </v-tabs>
-        </v-card>
+        <!-- Navigation Pills -->
+        <div class="pill-scroller mb-4">
+            <v-chip-group v-model="tab" mandatory selected-class="pill--active" class="pa-0">
+                <v-chip v-for="t in calcTabs" :key="t.value" :value="t.value" class="pill" size="large" variant="outlined">
+                    <v-icon :icon="t.icon" start size="18" /> {{ t.label }}
+                </v-chip>
+            </v-chip-group>
+        </div>
 
         <!-- Main Content Tabs -->
         <v-window v-model="tab" class="pa-0">
@@ -152,6 +127,7 @@
 
                 <!-- Room Results -->
                 <v-expand-transition>
+                    <EmptyResult v-if="!results.room" />
                     <div v-if="results.room">
                         <h3 class="text-subtitle-1 font-weight-bold mb-3 d-flex align-center">
                             <v-icon :icon="mdiCheckCircle" color="success" class="mr-2" />
@@ -340,6 +316,7 @@
 
                 <!-- Results Concrete -->
                 <v-expand-transition>
+                    <EmptyResult v-if="!results.concrete" />
                     <div v-if="results.concrete">
                         <h3 class="text-subtitle-1 font-weight-bold mb-3 d-flex align-center">
                             <v-icon :icon="mdiCheckCircle" color="success" class="mr-2" />
@@ -478,6 +455,7 @@
                 </v-card>
 
                 <v-expand-transition>
+                    <EmptyResult v-if="!results.walls" />
                     <div v-if="results.walls">
                         <h3 class="text-subtitle-1 font-weight-bold mb-3 d-flex align-center">
                             <v-icon :icon="mdiCheckCircle" color="success" class="mr-2" />
@@ -659,6 +637,7 @@
                 </v-card>
 
                 <v-expand-transition>
+                    <EmptyResult v-if="!results.tiles" />
                     <div v-if="results.tiles">
                         <h3 class="text-subtitle-1 font-weight-bold mb-3 d-flex align-center">
                             <v-icon :icon="mdiCheckCircle" color="success" class="mr-2" />
@@ -717,9 +696,18 @@
         mdiRuler,
         mdiHomeCity,
     } from '@mdi/js';
+    import EmptyResult from '@/components/EmptyResult.vue';
+    import PageHeader from '@/components/PageHeader.vue';
     import {calculateConcrete, calculateWall, calculateTiling, calculateRoom} from '@/services/calculatorEngine';
 
     const tab = ref('room');
+
+    const calcTabs = [
+        {value: 'room', label: 'Cuarto', icon: mdiHomeOutline},
+        {value: 'walls', label: 'Paredes', icon: mdiWall},
+        {value: 'concrete', label: 'Vaciado', icon: mdiCubeOutline},
+        {value: 'tiles', label: 'Pisos', icon: mdiGrid},
+    ];
 
     type BrickKey = 'adobito' | '6_holes';
 
@@ -742,16 +730,16 @@
 
     // Datos para Cuarto Completo
     const roomData = reactive<{
-        lengthM: number;
-        widthM: number;
-        heightM: number;
-        openingsM2: number;
+        lengthM: number | null;
+        widthM: number | null;
+        heightM: number | null;
+        openingsM2: number | null;
         brickType: BrickKey;
     }>({
-        lengthM: 4,
-        widthM: 4,
-        heightM: 3,
-        openingsM2: 4,
+        lengthM: null,
+        widthM: null,
+        heightM: null,
+        openingsM2: null,
         brickType: '6_holes',
     });
 
@@ -766,14 +754,14 @@
     });
 
     // Dimensiones de hormigón en metros/cm
-    const concreteDimensions = reactive({
-        length: 5,
-        width: 4,
-        thickness: 10,
+    const concreteDimensions = reactive<{length: number | null; width: number | null; thickness: number | null}>({
+        length: null,
+        width: null,
+        thickness: null,
     });
 
     const concrete = reactive<{volume: number; proportion: '1:2:3' | '1:2:4'}>({
-        volume: 2.0,
+        volume: 0,
         proportion: '1:2:3',
     });
 
@@ -784,13 +772,13 @@
     };
 
     // Dimensiones de paredes en metros
-    const wallDimensions = reactive({
-        length: 10,
-        height: 2.5,
+    const wallDimensions = reactive<{length: number | null; height: number | null}>({
+        length: null,
+        height: null,
     });
 
     const walls = reactive<{area: number; brickType: BrickKey}>({
-        area: 25,
+        area: 0,
         brickType: '6_holes',
     });
 
@@ -801,13 +789,13 @@
     };
 
     // Dimensiones de pisos en metros y cerámica en cm
-    const tileDimensions = reactive({
-        length: 6,
-        width: 5,
+    const tileDimensions = reactive<{length: number | null; width: number | null}>({
+        length: null,
+        width: null,
     });
 
     const tiles = reactive({
-        area: 30,
+        area: 0,
         tileWidthCm: 40,
         tileHeightCm: 40,
     });
@@ -846,12 +834,16 @@
     });
 
     const calcRoom = () => {
+        if (!roomData.lengthM || !roomData.widthM || !roomData.heightM) {
+            results.room = null;
+            return;
+        }
         results.room = calculateRoom(
             roomData.lengthM,
             roomData.widthM,
             roomData.heightM,
             roomData.brickType as any,
-            roomData.openingsM2,
+            roomData.openingsM2 || 0,
             true,
             true,
             1.0,
@@ -859,14 +851,26 @@
     };
 
     const calcConcrete = () => {
+        if (!(concrete.volume > 0)) {
+            results.concrete = null;
+            return;
+        }
         results.concrete = calculateConcrete(concrete.volume, concrete.proportion as any, 1.0);
     };
 
     const calcWall = () => {
+        if (!(walls.area > 0)) {
+            results.walls = null;
+            return;
+        }
         results.walls = calculateWall(walls.area, walls.brickType as any, '1:4', 1.0);
     };
 
     const calcTiles = () => {
+        if (!(tiles.area > 0)) {
+            results.tiles = null;
+            return;
+        }
         results.tiles = calculateTiling(tiles.area, 1.0, tiles.tileWidthCm, tiles.tileHeightCm);
     };
 
