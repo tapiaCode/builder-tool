@@ -51,6 +51,13 @@ export default defineConfig({
       '.vue',
     ],
   },
+  optimizeDeps: {
+    // Pre-bundle every Vuetify component the app uses so the dev server
+    // does not reload the page on first visit ("Outdated Optimize Dep").
+    entries: ['./src/**/*.vue'],
+    exclude: ['vuetify'],
+    include: ['vuetify/components', 'vuetify/directives', 'vuetify/iconsets/mdi-svg'],
+  },
   server: {
     port: 3000,
   },

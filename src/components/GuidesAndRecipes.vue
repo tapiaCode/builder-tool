@@ -9,7 +9,7 @@
                     <v-icon :icon="mdiFilterVariant" color="primary" class="mr-2" />
                     Calculadora Rápida de Mezclas
                 </h3>
-                <v-chip size="x-small" color="primary" variant="tonal" class="font-weight-bold">
+                <v-chip size="x-small" color="primary" variant="tonal" class="font-weight-bold flex-shrink-0 ml-2 d-none d-sm-inline-flex">
                     Baldes de 20L
                 </v-chip>
             </div>
@@ -33,7 +33,7 @@
                     />
                 </v-col>
                 <v-col cols="12" sm="8">
-                    <v-chip-group v-model="bagsCount" mandatory color="primary" class="py-0">
+                    <v-chip-group v-model="bagsCount" mandatory column color="primary" class="py-0">
                         <v-chip :value="1" filter size="small">1 Bolsa</v-chip>
                         <v-chip :value="2" filter size="small">2 Bolsas</v-chip>
                         <v-chip :value="3" filter size="small">3 Bolsas</v-chip>
@@ -45,7 +45,7 @@
 
             <!-- Mix Type Chips -->
             <div class="text-caption font-weight-bold text-medium-emphasis mb-1">Tipo de trabajo o estructura:</div>
-            <v-chip-group v-model="mixType" mandatory color="primary" class="mb-3">
+            <v-chip-group v-model="mixType" mandatory column color="primary" class="mb-3">
                 <v-chip value="structural" filter size="small" variant="elevated">
                     1:2:3 Hormigón Estructural
                 </v-chip>
@@ -117,7 +117,7 @@
         </v-card>
 
         <!-- Technical Accordion Cards -->
-        <v-expansion-panels variant="popout" class="rounded-xl">
+        <v-expansion-panels class="guide-panels">
             <!-- PANEL 1: Equivalencias en Bolivia -->
             <v-expansion-panel class="rounded-xl mb-2">
                 <v-expansion-panel-title class="font-weight-bold text-subtitle-1">

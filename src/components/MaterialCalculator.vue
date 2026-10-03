@@ -115,7 +115,7 @@
                         </v-col>
                     </v-row>
 
-                    <v-alert type="info" variant="tonal" border="start" class="my-3 py-2">
+                    <v-alert v-if="results.room" type="info" variant="tonal" border="start" class="my-3 py-2">
                         <div class="d-flex align-center justify-space-between flex-wrap gap-2">
                             <span class="text-body-2">
                                 <strong>Cuarto:</strong> {{ roomData.lengthM }}m × {{ roomData.widthM }}m ({{ results.room?.floorArea }} m² de piso) |
@@ -259,7 +259,7 @@
                         </v-col>
                     </v-row>
 
-                    <v-alert type="info" variant="tonal" border="start" class="my-3 py-2">
+                    <v-alert v-if="concrete.volume > 0" type="info" variant="tonal" border="start" class="my-3 py-2">
                         <div class="d-flex align-center justify-space-between flex-wrap">
                             <span class="text-body-2">
                                 <strong>Espacio calculado:</strong> {{ concreteDimensions.length }}m × {{ concreteDimensions.width }}m ×
@@ -416,7 +416,7 @@
                         </v-col>
                     </v-row>
 
-                    <v-alert type="info" variant="tonal" border="start" class="my-3 py-2">
+                    <v-alert v-if="walls.area > 0" type="info" variant="tonal" border="start" class="my-3 py-2">
                         <div class="d-flex align-center justify-space-between flex-wrap">
                             <span class="text-body-2">
                                 <strong>Pared a construir:</strong> {{ wallDimensions.length }}m de Largo × {{ wallDimensions.height }}m de Alto
@@ -581,7 +581,7 @@
                         </v-col>
                     </v-row>
 
-                    <v-alert type="info" variant="tonal" border="start" class="my-3 py-2">
+                    <v-alert v-if="tiles.area > 0" type="info" variant="tonal" border="start" class="my-3 py-2">
                         <div class="d-flex align-center justify-space-between flex-wrap">
                             <span class="text-body-2">
                                 <strong>Superficie total del piso:</strong> {{ tileDimensions.length }}m × {{ tileDimensions.width }}m

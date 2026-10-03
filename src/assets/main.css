@@ -261,6 +261,40 @@ body {
   --v-field-border-opacity: 0.18;
 }
 
+/* Hide number spinners: they are too small to tap on phones */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Guide accordion: separate cards, no divider lines */
+.guide-panels {
+  gap: 10px;
+}
+.guide-panels .v-expansion-panel {
+  border-radius: 18px !important;
+  border: 1px solid var(--card-border);
+  margin: 0 !important;
+}
+.guide-panels .v-expansion-panel::after,
+.guide-panels .v-expansion-panel__shadow {
+  display: none !important;
+}
+.guide-panels .v-expansion-panel-title {
+  min-height: 60px;
+  line-height: 1.35;
+}
+
+/* Top toasts sit below the app header */
+.below-header .v-snackbar__wrapper {
+  margin-top: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 8px) !important;
+}
+
 /* Kept for compatibility — subtle, no pulsing */
 .pulse-badge {
   animation: none;

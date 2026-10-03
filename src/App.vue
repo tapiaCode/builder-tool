@@ -88,7 +88,7 @@ const tabs = [
 const isDark = computed(() => theme.global.current.value.dark)
 
 const toggleTheme = () => {
-  theme.global.name.value = isDark.value ? 'obrakitTheme' : 'obrakitThemeDark'
+  theme.change(isDark.value ? 'obrakitTheme' : 'obrakitThemeDark')
   try {
     localStorage.setItem(THEME_KEY, theme.global.name.value)
   } catch {
@@ -107,7 +107,7 @@ onMounted(async () => {
   try {
     const saved = localStorage.getItem(THEME_KEY)
     if (saved === 'obrakitTheme' || saved === 'obrakitThemeDark') {
-      theme.global.name.value = saved
+      theme.change(saved)
     }
   } catch {
     // Storage may be unavailable
