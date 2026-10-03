@@ -60,5 +60,19 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    watch: {
+      // Only src/, public/ and config files need watching. Skipping native
+      // projects, build output and tool folders keeps Linux from running out
+      // of inotify watchers (ENOSPC).
+      ignored: [
+        '**/android/**',
+        '**/ios/**',
+        '**/dist/**',
+        '**/.agents/**',
+        '**/.claude/**',
+        '**/.git/**',
+        '**/node_modules/**',
+      ],
+    },
   },
 })
